@@ -127,7 +127,7 @@
 .theme-dark .app-header .menu-icon i {
   color: #fff;
 }
-.theme-dark h1, .theme-dark h2, .theme-dark h3, .theme-dark h4, .theme-dark h5, .theme-dark h6, .theme-dark .h1, .theme-dark .h2, .theme-dark .h3, .theme-dark .h4, .theme-dark .h5, .theme-dark .h6 {
+.theme-dark h1, .theme-dark p, .theme-dark h2, .theme-dark h3, .theme-dark h4, .theme-dark h5, .theme-dark h6, .theme-dark .h1, .theme-dark .h2, .theme-dark .h3, .theme-dark .h4, .theme-dark .h5, .theme-dark .h6 {
   color: #fff !important;
 }
 
@@ -1326,6 +1326,10 @@
   bottom: 15px;
 }
 
+.bottom-5 {
+  bottom: 5;
+}
+
 .pt-7 {
   padding-top: 75px;
 }
@@ -1584,6 +1588,9 @@
   display: inline-block;
 }
 
+.theme-dark .theme-dark-text {
+  color: white;
+}
 /*!
  * Bootstrap v5.0.0-beta3 (https://getbootstrap.com/)
  * Copyright 2011-2021 The Bootstrap Authors
@@ -8076,6 +8083,10 @@ textarea.form-control-lg {
 
 .min-vh-100 {
   min-height: 100vh !important;
+}
+
+.min-h-200 {
+  min-height: 200px !important;
 }
 
 .flex-fill {

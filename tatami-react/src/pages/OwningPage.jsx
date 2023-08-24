@@ -1,14 +1,20 @@
-import React, {useState, Fragment, useContext} from "react";
+import React, {
+    // useState, 
+    Fragment, useContext} from "react";
 import Chart from "react-apexcharts";
 
 import Header from '../components/Header';
 import Leftnav from '../components/Leftnav';
 import Appfooter from '../components/Appfooter';
-import Popupchat from '../components/Popupchat';
+// import Popupchat from '../components/Popupchat';
 import { ApiContext } from '../context/ApiContext'
 
 const OwningPage = () => {
-    const { profile, profiles, intpage, postsforintpage, followPage, followingpage,affiliates,owningpage, getUserInterest, newUserIntPage} =  useContext(
+    const {
+        //  profile, profiles, 
+        intpage, 
+        // postsforintpage, followPage, followingpage,affiliates,owningpage, getUserInterest, newUserIntPage
+    } =  useContext(
         ApiContext
     );
 

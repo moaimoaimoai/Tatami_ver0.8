@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.conf import settings
+from django.utils import timezone
+import random
 
 
 def upload_avatar_path(instance, filename):
@@ -46,14 +48,19 @@ class UserManager(BaseUserManager):
 
         return user
 
-
 class User(AbstractBaseUser, PermissionsMixin):
-
     email = models.EmailField(max_length=50, unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-
+    created_time = models.DateTimeField(default=timezone.now)
     objects = UserManager()
+    verification_key = models.IntegerField(null=True)
+    type = models.CharField(max_length=50, default='normal')
+
+    def save(self, *args, **kwargs):
+        if not self.pk:  # Check if the user is being created
+            self.verification_key = random.randint(100000, 999999)  # Generate a random number with 5 digits
+        super().save(*args, **kwargs)
 
     USERNAME_FIELD = 'email'
 
@@ -70,9 +77,9 @@ class Profile(models.Model):
     )
     created_on = models.DateTimeField(auto_now_add=True)
     img = models.ImageField(blank=True, null=True,
-                            upload_to=upload_avatar_path)
+                            upload_to=upload_avatar_path, default="avatars/default.jpg")
     imgBackground = models.ImageField(blank=True, null=True,
-                                      upload_to=upload_avatar_path_background)
+                                      upload_to=upload_avatar_path_background, default="avatars/default_background.jpg")
     birth = models.IntegerField(blank=True, null=True)
     sex = models.IntegerField(blank=True, null=True)
 
@@ -275,8 +282,7 @@ class FollowingPage(models.Model):
         settings.AUTH_USER_MODEL, related_name='followingUser',
         on_delete=models.CASCADE
     )
-    pageId = models.ForeignKey(MonoPage, blank=True, null=True,
-                               related_name='followPageId', on_delete=models.CASCADE)
+    pageUrl = models.CharField(max_length=30)
     created_on = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

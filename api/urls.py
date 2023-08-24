@@ -25,7 +25,12 @@ router.register("owningpage", views.OwningPageViewSet)
 
 
 urlpatterns = [
+    path('forgot-password/', views.ForgotPasswordView.as_view(), name='forgot-password'),
     path('register/', views.CreateUserView.as_view(), name='register'),
+    path('loginGoogle/', views.LoginGoogleView.as_view(), name='loginGoogle'),
+    path('verify/', views.EmailVerifyView.as_view(), name='verify'),
+    path('reset-password/', views.ResetPasswordView.as_view(), name='reset-password'),
+    path('verify-for-password-reset/', views.PasswordVerifyView.as_view(), name='verifyPasswordReset'),
     path('myprofile/', views.MyProfileListView.as_view(), name='myprofile'),
     path('', include(router.urls)),
     path('userrecommendeduser/bulk',

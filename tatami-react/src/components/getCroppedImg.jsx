@@ -1,4 +1,4 @@
-import area from "react-easy-crop";
+// import area from "react-easy-crop";
 
 /**
  * urlをもとにimage要素を作成

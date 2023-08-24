@@ -13,45 +13,45 @@ class Analytics extends Component {
         this.state = {
             labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May' ,'Jun', 'Jul', 'Aug', 'Sep', 'Oct' , 'Nov', 'Dec'],
             series: [{
-            name: '',
-            data: [35, 66, 34, 56, 18 ,35, 66, 34, 56, 18 , 56, 18]
-            },{
-            name: '',
-            data: [12, 34, 12, 11, 7 ,12, 34, 12, 11, 7 , 11, 7]
+                name: '',
+                data: [35, 66, 34, 56, 18 ,35, 66, 34, 56, 18 , 56, 18]
+            },
+            {
+                name: '',
+                data: [12, 34, 12, 11, 7 ,12, 34, 12, 11, 7 , 11, 7]
             }],
             options: {
                 chart: {
-                type: 'bar',
-            //   width:'100%',
-                height: 250,
-                stacked: true,
-                toolbar: {
-                show: false
-                },    
-            },
-            responsive: [{
-                breakpoint: 480,
-                options: {
+                    type: 'bar',
+                //   width:'100%',
+                    height: 250,
+                    stacked: true,
+                    toolbar: {
+                    show: false
+                    },
+                },
+                responsive: [{
+                    breakpoint: 480,
+                    options: {
+                        legend: {
+                            position: 'bottom',
+                            offsetX: -10,
+                            offsetY: 0
+                        }
+                    }
+                }],
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                    },
+                },
                 legend: {
-                    position: 'bottom',
-                    offsetX: -10,
-                    offsetY: 0
-                }
-                }
-            }],
-            plotOptions: {
-                bar: {
-                    horizontal: false,
+                    show: false
+                },
+                fill: {
+                    opacity: 1
                 },
             },
-            legend: {
-                show: false
-            },
-            fill: {
-                opacity: 1
-            },
-            },
-            
         };
     }
     render() {
@@ -110,24 +110,17 @@ class Analytics extends Component {
                                         </div>
                                     </div>
                                 </div>
-
                                 <div className="col-lg-12 mb-3">
-                                <div className="card w-100 p-3 border-0 mb-3 rounded-xxl bg-lightblue2 shadow-none overflow-hidden">
-                                    <Chart options={this.state.options}
-                                    series={this.state.series}
-                                    type="bar"
-                                    width="100%"/>
-
+                                    <div className="card w-100 p-3 border-0 mb-3 rounded-xxl bg-lightblue2 shadow-none overflow-hidden">
+                                        <Chart options={this.state.options}
+                                        series={this.state.series}
+                                        type="bar"
+                                        width="100%"/>
+                                    </div>
                                 </div>
-
-                                </div>
-
                             </div>
-
                         </div>
-
                     </div>
-
                 </div>
                 <Popupchat />
                 <Appfooter />

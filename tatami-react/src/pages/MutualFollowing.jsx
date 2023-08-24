@@ -1,22 +1,25 @@
 import React, {  Fragment } from "react";
+import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Leftnav from '../components/Leftnav';
 import Appfooter from '../components/Appfooter';
 import Popupchat from '../components/Popupchat';
 import { useContext } from 'react';
 import { ApiContext } from '../context/ApiContext';
-import Profiledetail from '../components/Profiledetail';
-import UserpagePicture from "../components/UserpagePicture";
+// import Profiledetail from '../components/Profiledetail';
+// import UserpagePicture from "../components/UserpagePicture";
 import FollowEach from "../components/FollowEach";
 import { useCookies } from "react-cookie";
 import LoginComponent from "../components/LoginComponent";
-import ProfileRecommender from "../components/ProfileRecommender";
+// import ProfileRecommender from "../components/ProfileRecommender";
 
 const MutualFollowing = () => {
-    const { profile, monoposts, profiles, followinguser, mutualfollowinguser } =  useContext(
+    const { profile, 
+        // monoposts, profiles, followinguser,
+         mutualfollowinguser } =  useContext(
         ApiContext
     );
-    const [cookies, setCookie, removeCookie] = useCookies(["current-token"]);
+    const [cookies] = useCookies(["current-token"]);
 
     const listProfiles =
         profile.id &&
@@ -56,11 +59,11 @@ const MutualFollowing = () => {
 
                                 <div className='card-body d-block w-100 shadow-none mb-0 p-0 border-top-xs'>
                                     <ul className='nav nav-tabs h55 d-flex product-info-tab border-bottom-0 ps-4' id="pills-tab" role="tablist" >
-                                        <li className='list-inline-item me-5'><a className='fw-700 font-xssss text-grey-500 pt-3 pb-3 ls-1 d-inline-block' href="/userpage" data-toggle="tab">投稿</a></li>
-                                        <li className="list-inline-item me-5"><a className="fw-700 font-xssss text-grey-500 pt-3 pb-3 ls-1 d-inline-block" href="/followingpagelist" data-toggle="tab">話題</a></li>
-                                        <li className="list-inline-item me-5"><a className="fw-700 font-xssss text-grey-500 pt-3 pb-3 ls-1 d-inline-block" href="/following" data-toggle="tab">フォロー</a></li>
-                                        <li className="list-inline-item me-5"><a className="fw-700 font-xssss text-grey-500 pt-3 pb-3 ls-1 d-inline-block" href="/followed" data-toggle="tab">フォロワー</a></li>
-                                        <li className="active list-inline-item me-5"><a className="active fw-700 font-xssss text-grey-500 pt-3 pb-3 ls-1 d-inline-block" href="/mutualfollowing" data-toggle="tab">相互フォロー</a></li>
+                                        <li className='list-inline-item me-5'><Link className='fw-700 font-xssss text-grey-500 pt-3 pb-3 ls-1 d-inline-block' to="/userpage" data-toggle="tab">投稿</Link></li>
+                                        <li className="list-inline-item me-5"><Link className="fw-700 font-xssss text-grey-500 pt-3 pb-3 ls-1 d-inline-block" to="/followingpagelist" data-toggle="tab">話題</Link></li>
+                                        <li className="list-inline-item me-5"><Link className="fw-700 font-xssss text-grey-500 pt-3 pb-3 ls-1 d-inline-block" to="/following" data-toggle="tab">フォロー</Link></li>
+                                        <li className="list-inline-item me-5"><Link className="fw-700 font-xssss text-grey-500 pt-3 pb-3 ls-1 d-inline-block" to="/followed" data-toggle="tab">フォロワー</Link></li>
+                                        <li className="active list-inline-item me-5"><Link className="active fw-700 font-xssss text-grey-500 pt-3 pb-3 ls-1 d-inline-block" to="/mutualfollowing" data-toggle="tab">相互フォロー</Link></li>
 
                                     </ul>
 

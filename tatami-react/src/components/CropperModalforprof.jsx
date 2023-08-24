@@ -6,9 +6,9 @@ const useStyles = makeStyles({
   root: {
     display: "flex",
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   },
-  
+
   modal: {
     width: 420,
     height: 500,
@@ -24,9 +24,9 @@ const useStyles = makeStyles({
       position: "relative",
       "& .container": {},
       "& .crop-area": {
-        border: "3px solid #00A0FF"
+        border: "3px solid #00A0FF",
       },
-      "& .media": {}
+      "& .media": {},
     },
     "& .controls": {
       height: 40,
@@ -36,8 +36,8 @@ const useStyles = makeStyles({
       alignItems: "center",
       marginTop: 10,
       "& .zoom-range": {
-        color: "#00A0FF"
-      }
+        color: "#00A0FF",
+      },
     },
     "& .buttons": {
       height: 40,
@@ -49,30 +49,30 @@ const useStyles = makeStyles({
       marginBottom: 10,
       "& .close": {
         backgroundColor: "gray",
-        color: "#fff"
+        color: "#fff",
       },
       "& .ok": {
         backgroundColor: "#00A0FF",
-        color: "#fff"
-      }
-    }
-  }
+        color: "#fff",
+      },
+    },
+  },
 });
 type Props = {
   crop: {
-    x: number;
-    y: number;
-  };
-  setCrop: (crop: { x: number; y: number }) => void;
-  zoom: number;
-  setZoom: (zoom: number) => void;
-  onCropComplete: (croppedArea: Area, croppedAreaPixels: Area) => void;
-  open: boolean;
-  onClose: () => void;
-  imgSrc: string;
-  showCroppedImage: () => void;
-  onMediaLoaded: (mediaSize: MediaSize) => void;
-  minZoom: number;
+    x: number,
+    y: number,
+  },
+  setCrop: (crop: { x: number, y: number }) => void,
+  zoom: number,
+  setZoom: (zoom: number) => void,
+  onCropComplete: (croppedArea: Area, croppedAreaPixels: Area) => void,
+  open: boolean,
+  onClose: () => void,
+  imgSrc: string,
+  showCroppedImage: () => void,
+  onMediaLoaded: (mediaSize: MediaSize) => void,
+  minZoom: number,
 };
 const CropperModalforprof: React.FC<Props> = ({
   crop,
@@ -85,7 +85,7 @@ const CropperModalforprof: React.FC<Props> = ({
   imgSrc,
   showCroppedImage,
   onMediaLoaded,
-  minZoom
+  minZoom,
 }) => {
   const classes = useStyles();
   return (
@@ -105,12 +105,12 @@ const CropperModalforprof: React.FC<Props> = ({
               onZoomChange={setZoom}
               cropSize={{
                 width: CROP_WIDTH,
-                height: CROP_WIDTH / ASPECT_RATIO
+                height: CROP_WIDTH / ASPECT_RATIO,
               }}
               classes={{
                 containerClassName: "container",
                 cropAreaClassName: "crop-area",
-                mediaClassName: "media"
+                mediaClassName: "media",
               }}
               onMediaLoaded={onMediaLoaded}
               showGrid={false}

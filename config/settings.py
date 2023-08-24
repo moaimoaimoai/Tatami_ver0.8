@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     "djoser",
     "api.apps.ApiConfig",
     "corsheaders",
-    "api_dm.apps.ApiDmConfig",
+    # "api_dm.apps.ApiDmConfig",
 ]
 
 MIDDLEWARE = [
@@ -67,14 +67,15 @@ MIDDLEWARE = [
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
     "http://127.0.0.1:5500",
+    "http://127.0.0.1:3000",
     "http://tatami-dev.s3-website-ap-northeast-1.amazonaws.com",
     "http://tatami-server.com",
     "https://tatami-server.com",
     "http://[::]:8000",
 ]
 
-CSRF_TRUSTED_ORIGINS = ['localhost:3000',
-                        '127.0.0.1', 'tatami-server.com', '[::]:8000']
+CSRF_TRUSTED_ORIGINS = ['http://localhost:3000',
+                        'http://127.0.0.1', 'https://tatami-server.com', 'http://[::]:8000']
 
 ROOT_URLCONF = 'config.urls'
 
@@ -132,7 +133,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'ja'
 
-TIME_ZONE = 'ASIA/TOKYO'
+#TIME_ZONE = 'Asia/Tokyo'
 
 USE_I18N = True
 
@@ -154,3 +155,10 @@ AUTH_USER_MODEL = 'api.User'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST_USER = 'Your gmail id'  # TODO: Your email
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_PASSWORD = 'Your app password'  # TODO: Give APP Password here
+EMAIL_USE_TLS = True

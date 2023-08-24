@@ -5,21 +5,25 @@ import Appfooter from '../components/Appfooter';
 import Popupchat from '../components/Popupchat';
 import { useContext } from 'react';
 import { ApiContext } from '../context/ApiContext';
-import Profiledetail from '../components/Profiledetail';
-import UserpagePicture from "../components/UserpagePicture";
-import FollowEach from "../components/FollowEach";
+// import Profiledetail from '../components/Profiledetail';
+// import UserpagePicture from "../components/UserpagePicture";
+// import FollowEach from "../components/FollowEach";
 import { useCookies } from "react-cookie";
 import LoginComponent from "../components/LoginComponent";
-import RecommendEach from "./RecommendEach";
-import ProfileRecommender from "../components/ProfileRecommender";
+// import RecommendEach from "./RecommendEach";
+// import ProfileRecommender from "../components/ProfileRecommender";
 import OwningEach from "./OwningEach";
 
 const OwningPages = () => {
-    const { profile, monoposts,owningpage, profiles, followingpage} =  useContext(
+    const { profile, 
+        // monoposts,
+        owningpage,
+        //  profiles, followingpage
+        } =  useContext(
         ApiContext
     );
-    const posts = monoposts.filter(item =>{return item.userPost === profile.userProfile})
-    const [cookies, setCookie, removeCookie] = useCookies(["current-token"]);
+    // const posts = monoposts.filter(item =>{return item.userPost === profile.userProfile})
+    const [cookies] = useCookies(["current-token"]);
 
     const pages =
         owningpage.map(page =>

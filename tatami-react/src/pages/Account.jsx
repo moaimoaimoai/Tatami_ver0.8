@@ -11,12 +11,10 @@ const Account = () => {
             <Header />
             <Leftnav />
             <AccountEach />
-
-            
-            <Appfooter /> 
+            <Appfooter />
         </Fragment>
     )
-    
+
 }
 
 export default Account;

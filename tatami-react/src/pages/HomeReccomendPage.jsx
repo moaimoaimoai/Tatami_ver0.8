@@ -3,7 +3,6 @@ import { ApiContext } from '../context/ApiContext'
 import { useHistory } from "react-router-dom";
 import LinearProgress from '@mui/joy/LinearProgress'
 
-
 const HomeReccomendPage = (pageData) => {
     const history = useHistory()
     const page = pageData
@@ -23,7 +22,7 @@ const HomeReccomendPage = (pageData) => {
 
         <div className="card w-100 p-0 hover-card shadow-xss border-0 rounded-3 overflow-hidden me-1 mb-3" onClick={toMonopage}>
             <div className="card-image w-100 mb-3">
-                <a className="position-relative d-block"><img src={page.pageData.img} alt="hotel" className="w-100" /></a>
+                <a  href="#none" className="position-relative d-block"><img src={page.pageData.img} alt="hotel" className="w-100" /></a>
             </div>
             <div className="card-body pt-0">
                 <i className="feather-bookmark font-md text-grey-500 position-absolute right-0 me-3"></i>
@@ -49,7 +48,6 @@ const HomeReccomendPage = (pageData) => {
                 <a href="/mono" className="position-absolute bottom-15 mb-2 right-15"><i className="btn-round-sm bg-primary-gradiant text-white font-sm feather-chevron-right"></i></a>
             </div>
         </div>
-
     )
 } 
 

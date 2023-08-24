@@ -19,7 +19,7 @@ const RecommendPosts = () => {
     const { monopages, profile } =  useContext(
         ApiContext
     );
-    const [cookies, setCookie, removeCookie] = useCookies(["current-token"]);
+    const [cookies] = useCookies(["current-token"]);
 
 
     const listMonoPages =
@@ -48,12 +48,12 @@ const RecommendPosts = () => {
                                     </div>:
                                     <></>
                                     }
-                                    {!profile.id ?
+                                    {/* {!profile.id ?
                                     <div className='card w-100 shadow-xss rounded-xxl border-0 mb-3 bg-current'>
                                     <ProfileRecommender />
                                     </div>:
                                     <></>
-                                    }
+                                    } */}
                                     {listMonoPages}
                                 </div>  
                                 
