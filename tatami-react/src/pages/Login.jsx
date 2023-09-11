@@ -1,33 +1,34 @@
 import React, { useReducer, Fragment, useContext, useState, useEffect } from "react";
 import { withCookies } from "react-cookie";
 import axios from "axios";
-import { Link } from 'react-router-dom';
+import { Link, useHistory  } from 'react-router-dom';
 import { ApiContext } from '../context/ApiContext';
-// import { useGoogleLogin } from '@react-oauth/google';
+import { useGoogleLogin } from '@react-oauth/google';
 import CircularProgress from "@material-ui/core/CircularProgress";
 
 import {
-  START_FETCH,
-  FETCH_SUCCESS,
-  ERROR_CATCHED,
-  //INPUT_EDIT,
-  INPUT_EDIT_LOG,
-  INPUT_EDIT_REG,
-  TOGGLE_MODE,
+	START_FETCH,
+	FETCH_SUCCESS,
+	ERROR_CATCHED,
+	//INPUT_EDIT,
+	INPUT_EDIT_LOG,
+	INPUT_EDIT_REG,
+	TOGGLE_MODE,
 } from "../components/actionTypes"
+import { SnackbarContext } from "../context/SnackbarContext";
 
 const initialState = {
-  isLoading: false,
-  isLoginView: true,
-  error: "",
-  credentialsLog: {
-    username: "",
-    password: "",
-  },
-  credentialsReg: {
-    email: "",
-    password: "",
-  },
+	isLoading: false,
+	isLoginView: true,
+	error: "",
+	credentialsLog: {
+		username: "",
+		password: "",
+	},
+	credentialsReg: {
+		email: "",
+		password: "",
+	},
 };
 
 
@@ -84,43 +85,44 @@ const loginReducer = (state, action) => {
 };
 
 const Login = (props) => {
+    const history = useHistory();
 	const [user, setUser] = useState(null);
+	const { newSnack } = useContext(SnackbarContext);
 	const [gProfile, setGProfile] = useState(null);
 	const [state, dispatch] = useReducer(loginReducer, initialState);
 	const { profile } = useContext(ApiContext)
 
-  const inputChangedLog = () => (event) => {
-    //const cred = state.credentialsLog;
-    //cred[event.target.name] = event.target.value;
-    dispatch({
-      type: INPUT_EDIT_LOG,
-      //inputName: "state.credentialLog",
-      //payload: cred,
-      inputName: event.target.name,
-      payload: event.target.value,
-    });
-  };
+	const inputChangedLog = () => (event) => {
+		//const cred = state.credentialsLog;
+		//cred[event.target.name] = event.target.value;
+		dispatch({
+			type: INPUT_EDIT_LOG,
+			//inputName: "state.credentialLog",
+			//payload: cred,
+			inputName: event.target.name,
+			payload: event.target.value,
+		});
+	};
 
-  const inputChangedReg = () => (event) => {
-    //const cred = state.credentialsReg;
-    //cred[event.target.name] = event.target.value;
-    dispatch({
-      type: INPUT_EDIT_REG,
-      //inputName: "state.credentialReg",
-      //payload: cred,
-      inputName: event.target.name,
-      payload: event.target.value,
-    });
-  };
+	const inputChangedReg = () => (event) => {
+		//const cred = state.credentialsReg;
+		//cred[event.target.name] = event.target.value;
+		dispatch({
+			type: INPUT_EDIT_REG,
+			//inputName: "state.credentialReg",
+			//payload: cred,
+			inputName: event.target.name,
+			payload: event.target.value,
+		});
+	};
 
-	const gLogin = () => {}
-	// useGoogleLogin({
-	// 	onSuccess: (codeResponse) => {
-	// 		dispatch({ type: START_FETCH });
-	// 		setUser(codeResponse);
-	// 	},
-	// 	onError: (error) => console.log('Login Failed:', error)
-	// });
+	const gLogin = useGoogleLogin({
+		onSuccess: (codeResponse) => {
+			dispatch({ type: START_FETCH });
+			setUser(codeResponse);
+		},
+		onError: (error) => console.log('Login Failed:', error)
+	});
 
 	useEffect(
 		() => {
@@ -198,7 +200,15 @@ const Login = (props) => {
 					)
 					: (window.location.href = "/login"));
 				dispatch({ type: FETCH_SUCCESS });
-			} catch {
+			} catch (err) {
+				console.log(err.response.data);
+				const errData = err.response.data;
+				if (errData.username)
+					newSnack("error", errData.username);
+				else if (errData.password)
+					newSnack("error", errData.password);
+				else
+					newSnack("error", "LoginFailed");
 				dispatch({ type: ERROR_CATCHED });
 			}
 		} else {
@@ -210,13 +220,12 @@ const Login = (props) => {
 					headers: { "Content-Type": "application/json" },
 				}
 			).then(res => {
-				console.log('register-response', res.data)
 				dispatch({ type: FETCH_SUCCESS });
 				props.cookies.set("registered-email", res.data.email);
 				// dispatch({ type: TOGGLE_MODE });
-				window.location.href = '/please-verify';
+				history.push('/please-verify');
 			}).catch(err => {
-				console.log(err);
+				newSnack("error", "RegisterFailed");
 				dispatch({ type: ERROR_CATCHED });
 			});
 		};
@@ -225,15 +234,15 @@ const Login = (props) => {
 		dispatch({ type: TOGGLE_MODE });
 	};
 
-  return (
-    <Fragment>
-      <div className="main-wrap">
-        <div className="nav-header bg-transparent shadow-none border-0">
-          <div className="nav-top w-100">
-            <Link to="/home"><i className="feather-zap text-success display1-size me-2 ms-0"></i><span className="d-inline-block fredoka-font ls-3 fw-600 text-current font-xxl logo-text mb-0">Tatami </span> </Link>
+	return (
+		<Fragment>
+			<div className="main-wrap">
+				<div className="nav-header bg-transparent shadow-none border-0">
+					<div className="nav-top w-100">
+						<Link to="/home"><i className="feather-zap text-success display1-size me-2 ms-0"></i><span className="d-inline-block fredoka-font ls-3 fw-600 text-current font-xxl logo-text mb-0">Tatami </span> </Link>
 
 
-            {/* <a href="/login" className="header-btn d-none d-lg-block bg-dark fw-500 text-white font-xsss p-3 ms-auto w100 text-center lh-20 rounded-xl">ログイン</a>
+						{/* <a href="/login" className="header-btn d-none d-lg-block bg-dark fw-500 text-white font-xsss p-3 ms-auto w100 text-center lh-20 rounded-xl">ログイン</a>
                         <a href="/register" className="header-btn d-none d-lg-block bg-current fw-500 text-white font-xsss p-3 ms-2 w100 text-center lh-20 rounded-xl">新規登録</a> */}
 					</div>
 				</div>
@@ -277,17 +286,17 @@ const Login = (props) => {
                       <input onChange={inputChangedReg()} name="email" type="text" value={state.credentialsReg.email} className="style2-input ps-5 form-control text-grey-900 font-xsss fw-600" placeholder="Email" />
                     </div>
 
-                    <div className="form-group icon-input mb-3">
-                      <input type="password" className="style2-input ps-5 form-control text-grey-900 font-xss ls-3" placeholder="パスワード" />
-                      <i className="font-sm ti-lock text-grey-500 pe-0"></i>
-                    </div>
-                    <div className="form-group icon-input mb-1">
-                      <input type="password" onChange={inputChangedReg()} value={state.credentialsReg.password} name="password" className="style2-input ps-5 form-control text-grey-900 font-xss ls-3" placeholder="パスワード（確認）" />
-                      <i className="font-sm ti-lock text-grey-500 pe-0"></i>
-                    </div><div className="form-check text-left mb-3">
-                      <input type="checkbox" className="form-check-input mt-2" id="exampleCheck2" />
-                      <label className="form-check-label font-xsss text-grey-500">規約に同意する</label>
-                    </div>
+										<div className="form-group icon-input mb-3">
+											<input type="password" onChange={inputChangedReg()} value={state.credentialsReg.password} name="password" className="style2-input ps-5 form-control text-grey-900 font-xss ls-3" placeholder="パスワード" />
+											<i className="font-sm ti-lock text-grey-500 pe-0"></i>
+										</div>
+										<div className="form-group icon-input mb-1">
+											<input type="password" onChange={inputChangedReg()} value={state.credentialsReg.confirmPassword} name="confirmPassword" className="style2-input ps-5 form-control text-grey-900 font-xss ls-3" placeholder="パスワード（確認）" />
+											<i className="font-sm ti-lock text-grey-500 pe-0"></i>
+										</div><div className="form-check text-left mb-3">
+											<input type="checkbox" className="form-check-input mt-2" id="exampleCheck2" />
+											<label className="form-check-label font-xsss text-grey-500">規約に同意する</label>
+										</div>
 
 										<div className="col-sm-12 p-0 text-left">
 											<h6 className="text-grey-500 font-xsss fw-500 mt-0 mb-0 lh-32">{state.error}</h6>

@@ -100,9 +100,16 @@ const Createpost = (props) => {
   const [croppedImgSrc, setCroppedImgSrc] = useState("");
 
   const doPost = () => {
-    props.handleClose();
+    onHandleClose();
     createMonoPost();
   };
+
+  const onHandleClose = () => {
+    setCroppedImgSrc("");
+    setPostimg([]);
+    props.handleClose();
+  }
+
 
   /**
    * ファイルアップロード後
@@ -155,7 +162,7 @@ const Createpost = (props) => {
     try {
       const croppedImage = await getCroppedImg(imgSrc, croppedAreaPixels);
       setCroppedImgSrc(croppedImage);
-      const file = new File([croppedImage], `${profile.nickName}.jpg`, {
+      const file = new File([croppedImage], `profile_view.jpg`, {
         type: croppedImage.type,
       });
       setPostimg(file);
@@ -199,7 +206,7 @@ const Createpost = (props) => {
     <Dialog
       className="animated fadeIn"
       open={props.isVisible}
-      onClose={props.handleClose}
+      onClose={() => onHandleClose()}
       aria-labelledby="max-width-dialog-title"
       fullWidth={true}
       maxWidth="sm"
@@ -343,7 +350,7 @@ const Createpost = (props) => {
           </Button>
         ) : (
           <Button
-            onClick={props.handleClose}
+            onClick={() => onHandleClose()}
             color="secondary"
             variant="contained"
             disabled
@@ -351,7 +358,7 @@ const Createpost = (props) => {
             POST
           </Button>
         )}
-        <Button onClick={props.handleClose} color="primary">
+        <Button onClick={() => onHandleClose()} color="primary">
           Close
         </Button>
       </DialogActions>

@@ -1,14 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useContext, useState } from "react";
 import { ApiContext } from "../context/ApiContext";
 import Lightbox from "react-image-lightbox";
 import { useLocation } from "react-router-dom";
+import { SnackbarContext } from "../context/SnackbarContext";
+import copy from '../context/clipboard';
+import { useParams } from "react-router-dom/cjs/react-router-dom.min";
 
-const SpecificUserpageEach = () => {
+const SpecificUserpageEach = (props) => {
+
   const { profile, newRequestFriend, intuser, followinguser, followPage, followingpage } =
     useContext(ApiContext);
+
   const [isOpenModal, setIsOpenModal] = useState(false);
   const { pathname } = useLocation();
+  const { newSnack } = useContext(SnackbarContext);
 
   const createNewRequest = () => {
     const uploadDataAsk = new FormData();
@@ -18,12 +24,13 @@ const SpecificUserpageEach = () => {
   };
 
   const isfollow = followinguser.find((item) => {
-    return item.userProfile === intuser.userProfile;
+      return item.userProfile === intuser.userProfile;
   });
 
-  const isPagefollow = followingpage.find((item) => {
-    return item.pageUrl === pathname;
-  });
+  const sharePage = () => {
+    copy(window.location.href);
+    newSnack("info", "リンクをコピーしました。");
+  }
 
   return (
     <div className="card w-100 border-0  bg-white shadow-xss rounded-xxl">
@@ -92,22 +99,12 @@ const SpecificUserpageEach = () => {
           </span>
         </h4>
         <div className="position-absolute bottom-15 mb-2 right-15">
-          {!isPagefollow ? (
-            <button
-              onClick={() => followPage()}
-              className="mt-0 btn pt-2 pb-2 ps-3 pe-3 lh-24 ms-1 ls-3 d-inline-block rounded-xl bg-success font-xsssss fw-700 ls-lg text-white"
-            >
-              この話題をフォロー
-            </button>
-          ) : (
-            <button
-              onClick={() => followPage()}
-              disabled
-              className="mt-0 btn pt-2 pb-2 ps-3 pe-3 lh-24 ms-1 ls-3 d-inline-block rounded-xl bg-success font-xsssss fw-700 ls-lg text-white"
-            >
-              フォロー済み
-            </button>
-          )}
+          <button
+            onClick={sharePage}
+            className="mt-0 btn pt-2 pb-2 ps-3 pe-3 lh-24 ms-1 ls-3 d-inline-block rounded-xl bg-success font-xsssss fw-700 ls-lg text-white"
+          >
+            ユーザーをシェア
+          </button>
           {!isfollow ? (
             <button
               className="mt-0 btn pt-2 pb-2 ps-3 pe-3 lh-24 ms-1 ls-3 d-inline-block rounded-xl bg-success font-xsssss fw-700 ls-lg text-white"

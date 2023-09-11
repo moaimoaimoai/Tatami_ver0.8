@@ -1,47 +1,33 @@
 import React, { useContext } from 'react';
 import { ApiContext } from '../context/ApiContext'
 import { useHistory } from "react-router-dom";
-import { makeStyles } from '@material-ui/core/styles'
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemText from '@material-ui/core/ListItemText';
-import Avatar from '@material-ui/core/Avatar';
-import IconButton from '@material-ui/core/IconButton';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import CallMissedOutgoingIcon from '@material-ui/icons/CallMissedOutgoing';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 
-const useStyles = makeStyles((theme) => {
-    return {
-        listAvatar: {
-            backgroundColor: "#10d876"
-        }
-    }
-})
 
-const FollowingPage = (props) => {
+const FollowingPage = (monopage) => {
+    const { newUserIntPage, getUserInterest } = useContext(
+        ApiContext,
+    );
     const history = useHistory()
-    const classes = useStyles();
-
-    const toPage = () => {
-        history.push(props.url);
+    const toMonopage = () => {
+        const createdIntData = new FormData()
+        createdIntData.append("intPageId", monopage.monopage.id)
+        newUserIntPage(createdIntData)
+        // getUserInterest()
+        // getUserInterest()
+        // getUserInterest()
+        // history.push("/mono")
     }
+
     return (
-        <ListItem>
-            <ListItemAvatar>
-                <Avatar className={classes.listAvatar}>
-                    <CallMissedOutgoingIcon />
-                </Avatar>
-            </ListItemAvatar>
-            <ListItemText
-                primary={props.url}
-            />
-            <ListItemSecondaryAction>
-                <IconButton edge="end" aria-label="delete" onClick={toPage}>
-                    <ChevronRightIcon />
-                </IconButton>
-            </ListItemSecondaryAction>
-        </ListItem>
+        <div className="pointer">
+            <div className="card w-30 shadow-xss rounded-xxl border-0 pt-3 ps-3 pe-3 pb-2 me-2 ms-2 mb-2">
+                <div className="card-body p-0 d-flex pointer" onClick={() => toMonopage()}>
+                    <figure className="avatar me-3"><img src={monopage.monopage.img} alt="avater" className="shadow-sm rounded-3 w45" /></figure>
+                    <h4 className="fw-700 text-grey-900 font-xssss"> {monopage.monopage.title}<span className="d-block font-xssss fw-500 mt-1 lh-3 text-grey-500"> {monopage.monopage.created_on}</span>
+                    </h4>
+                </div>
+            </div>
+        </div>
     );
 }
 

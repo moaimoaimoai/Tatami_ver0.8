@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
-from .models import Profile, MonoPage, MonoPost, MonoComment, FriendRequest, UserIntPage, UserIntPost, UserIntComment, UserIntUser, PageAttribute, UserIntAttribute, FollowingPage, AffiliateLinks, UserRecommendedPage, UserRecommendedUser, OwningPage
+from .models import Advertisement, Profile, MonoPage, MonoPost, MonoComment, FriendRequest, UserIntPage, UserIntPost, UserIntComment, UserIntUser, PageAttribute, UserIntAttribute, FollowingPage, AffiliateLinks, UserRecommendedPage, UserRecommendedUser, OwningPage
 from django.core.mail import send_mail
 from django.template import loader
 from django.core import signing
@@ -20,30 +20,31 @@ class UserSerializer(serializers.ModelSerializer):
         userInfo=get_user_model().objects.get(email=user)
         encrypted_id = signing.dumps(userInfo.id)
         encrypted_key = signing.dumps(userInfo.verification_key)
-        # html_message = loader.render_to_string(
-        #     'email_sender_app/message.html',
-        #     {
-        #         # TODO:  Update with your own id
-        #         'id': encrypted_id,
-        #         # TODO:  Update with your own body
-        #         'body': encrypted_key,
-        #         # TODO: Update the signature
-        #         'sign': 'The Tatami account team',
-        #     }
-        # )
-        # send_mail(
-        #     'Verify your email address',
-        #     'You are lucky to receive this mail.',
-        #     'noreply@tatami.com',  # TODO: Update this with your mail id
-        #     [user],  # TODO: Update this with the recipients mail id
-        #     html_message=html_message,
-        #     fail_silently=False,
-        # )
+        html_message = loader.render_to_string(
+            'email_sender_app/message.html',
+            {
+                # TODO:  Update with your own id
+                'id': encrypted_id,
+                # TODO:  Update with your own body
+                'body': encrypted_key,
+                # TODO: Update the signature
+                'sign': 'The Tatami account team',
+            }
+        )
+        send_mail(
+            'Verify your email address',
+            'You are lucky to receive this mail.',
+            'noreply@tatami.com',  # TODO: Update this with your mail id
+            [user],  # TODO: Update this with the recipients mail id
+            html_message=html_message,
+            fail_silently=False,
+        )
         return user
 
 
 class ProfileSerializer(serializers.ModelSerializer):
     created_on = serializers.DateTimeField(format="%Y-%m-%d", read_only=True)
+    birth = serializers.DateField(format="%Y-%m-%d")
 
     class Meta:
         model = Profile
@@ -155,7 +156,7 @@ class FollowingPageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FollowingPage
-        fields = ('id', 'userId',  'pageUrl', 'created_on')
+        fields = ('id', 'userId',  'pageId', 'created_on')
         extra_kwargs = {'userId': {'read_only': True}}
 
 
@@ -207,4 +208,12 @@ class OwningPageSerializer(serializers.ModelSerializer):
     class Meta:
         model = OwningPage
         fields = ('id', 'userId',  'pageId', 'created_on')
+        extra_kwargs = {'userId': {'read_only': True}}
+
+class AdvertisementSerializer(serializers.ModelSerializer):
+    created = serializers.DateTimeField(format="%Y-%m-%d", read_only=True)
+
+    class Meta:
+        model = Advertisement
+        fields = ('id', 'type',  'url', 'content', 'img', 'target', 'cnt', 'created', 'userId', 'stripe_flag', 'del_flag')
         extra_kwargs = {'userId': {'read_only': True}}

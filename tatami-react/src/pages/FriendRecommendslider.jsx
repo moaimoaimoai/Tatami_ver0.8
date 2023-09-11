@@ -60,7 +60,7 @@ const FriendRecommendslider = (profileeach) => {
             // getUserInterest();
             // getUserInterest();
             // getUserInterest();
-            history.push(`/specificuserpage/${profileeach.profileeach.userProfile}`);
+            history.push(`/user/${profileeach.profileeach.userProfile}`);
         }
     };
 

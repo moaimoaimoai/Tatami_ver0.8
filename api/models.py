@@ -3,12 +3,17 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.conf import settings
 from django.utils import timezone
 import random
+from hashlib import sha256
 
 
 def upload_avatar_path(instance, filename):
     ext = filename.split('.')[-1]
     return '/'.join(['avatars', str(instance.userProfile.id)+str(instance.nickName)+str(".")+str(ext)])
 
+def upload_advertisement_path(instance, filename):
+    print(filename)
+    ext = filename.split('.')[-1]
+    return '/'.join(['advertisements', str(sha256().hexdigest()) + str(".") + str(ext)])
 
 def upload_avatar_path_background(instance, filename):
     ext = filename.split('.')[-1]
@@ -50,7 +55,7 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=50, unique=True)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     created_time = models.DateTimeField(default=timezone.now)
     objects = UserManager()
@@ -69,7 +74,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Profile(models.Model):
-    nickName = models.CharField(max_length=20)
+    nickName = models.CharField(max_length=20, default="default")
     caption = models.CharField(blank=True, null=True, max_length=100)
     userProfile = models.OneToOneField(
         settings.AUTH_USER_MODEL, related_name='userProfile',
@@ -80,7 +85,7 @@ class Profile(models.Model):
                             upload_to=upload_avatar_path, default="avatars/default.jpg")
     imgBackground = models.ImageField(blank=True, null=True,
                                       upload_to=upload_avatar_path_background, default="avatars/default_background.jpg")
-    birth = models.IntegerField(blank=True, null=True)
+    birth = models.DateField(null=True)
     sex = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
@@ -282,7 +287,8 @@ class FollowingPage(models.Model):
         settings.AUTH_USER_MODEL, related_name='followingUser',
         on_delete=models.CASCADE
     )
-    pageUrl = models.CharField(max_length=30)
+    pageId = models.ForeignKey(MonoPage, blank=True, null=True,
+                               related_name='followPageId', on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -326,3 +332,22 @@ class OwningPage(models.Model):
 
     def __str__(self):
         return str(self.created_on)
+
+class Advertisement(models.Model):
+    type = models.IntegerField()
+    url = models.CharField(max_length=50, null=True)
+    content = models.CharField(max_length=210)
+    img = models.ImageField(blank=True, null=False, upload_to=upload_advertisement_path)
+    target = models.IntegerField(default=0)
+    cnt = models.IntegerField(default=0)
+    created = models.DateTimeField(auto_now_add=True)
+    userId = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        null=False
+    )
+    stripe_flag = models.BooleanField(default=True)
+    del_flag = models.BooleanField(default=False)
+
+    def __str__(self):
+        return str(self.created)

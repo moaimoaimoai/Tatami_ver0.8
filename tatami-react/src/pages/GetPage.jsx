@@ -1,19 +1,34 @@
 import React, { 
     // useReducer, 
     Fragment,
-    //  useContext
+    useContext,
+    useEffect
  } from "react";
- import { Link } from 'react-router-dom';
-import { useShoppingCart } from 'use-shopping-cart'
-// import { formatCurrencyString } from 'use-shopping-cart'
-// import axios from "axios";
-// import { ApiContext } from '../context/ApiContext'
+import { Link, useHistory } from 'react-router-dom';
+import axios from "axios";
+import { ApiContext } from '../context/ApiContext'
 
 const GetPage = (props) => {
-//   const { profile,monocomments,  commentsforintpost,  monopages, profiles, newUserIntPage,likePost,newUserIntUser , getUserInterest,newUserIntPost, createRepost, monoposts} =  useContext(
-//     ApiContext, 
-// );
-  const { checkoutSingleItem } = useShoppingCart()
+    const history = useHistory();
+    const { intpage } = useContext(
+        ApiContext,
+    );
+    const checkoutSingleItem = () => {
+        axios.post(
+            process.env.REACT_APP_API_URL + "/api/user/create-checkout-session/",
+            {
+                SITE_URL : process.env.REACT_APP_PUBLIC_URL,
+                pageId: intpage.id.toString()
+            },
+            {
+                headers: { "Content-Type": "application/json" },
+            }
+        ).then(res => {
+            window.location.replace(res.data.goTo);
+        }).catch(err => {
+            console.log(err);
+        });
+    }
 //   const productData = [
 //     {
 //       name: 'Tatami Single Page',
@@ -32,7 +47,12 @@ const GetPage = (props) => {
 //     getUserInterest()
 //     history.push("/mono")
 // }
-
+useEffect(()=>{
+    console.log("intpage---", intpage)
+    if(!intpage.id) {
+        history.push("/home");
+    }
+}, [])
     return (
         <Fragment> 
             <div className="main-wrap">
@@ -54,7 +74,7 @@ const GetPage = (props) => {
                                         <div className="col-sm-12 p-0 text-left">
                                         <h6 className="text-grey-500 font-xsss fw-500 mt-0 mb-0 lh-32"> </h6>
                                         <div className="form-group mb-1">
-                                          <button onClick={() => checkoutSingleItem({ price: 'price_1NNqrCBweimbndG767O4crda' })}className="form-control text-center style2-input text-white fw-600 bg-dark border-0 p-0 mt-5 ">ページの情報を購入する</button>
+                                          <button onClick={checkoutSingleItem} className="form-control text-center style2-input text-white fw-600 bg-dark border-0 p-0 mt-5 ">ページの情報を購入する</button>
                                         </div>
                                         </div>
                                 </div>

@@ -3,25 +3,24 @@ import { useHistory } from "react-router-dom";
 import { ApiContext } from '../context/ApiContext'
 import CircularProgress from "@material-ui/core/CircularProgress";
 
-
 const GotPage = (props) => {
     const history = useHistory()
-    const { ownPage } = useContext(
+    const { ownPage, getUserInterest } = useContext(
         ApiContext,
     );
-    useEffect(() => {
-        async function preSet() {
-            const intPageId = localStorage.getItem('cartId')
-            localStorage.removeItem('cartId')
-            if (!intPageId) {
-                history.push('/owningpage')
-                return
-            }
-            await ownPage(intPageId)
+
+    useEffect(async () => {
+        const params = new URLSearchParams(window.location.search);
+        const queryValue = params.get('success');
+        const session_id = params.get('session_id');
+        const encrypted_pageId = params.get('index');
+        if(queryValue === "true" && session_id && encrypted_pageId) {
+            await ownPage(encrypted_pageId)
             history.push('/owningpage')
+        } else {
+            history.push('/home')
         }
-        preSet();
-    }, [history, ownPage]);
+    }, []);
 
     return (
         <Fragment>

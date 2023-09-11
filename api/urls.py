@@ -5,6 +5,8 @@ from rest_framework.routers import DefaultRouter
 app_name = 'user'
 
 router = DefaultRouter()
+router.register('advertisement', views.AdvertisementViewSet)
+router.register('updateAds', views.UpdateAdvertisementViewSet)
 router.register('profile', views.ProfileViewSet)
 router.register('pageattribute', views.PageAttributeViewSet)
 router.register('monopage', views.MonoPageViewSet)
@@ -22,9 +24,11 @@ router.register("affiliatelinks", views.AffiliateLinksViewSet)
 router.register("userrecommendeduser", views.UserRecommendedUserViewSet)
 router.register("userrecommendedpage", views.UserRecommendedPageViewSet)
 router.register("owningpage", views.OwningPageViewSet)
+router.register("example", views.MyExampleViewSet)
 
 
 urlpatterns = [
+    path('create-checkout-session/', views.StripeCheckoutView.as_view(), name='stripe-create-checkout-session'),
     path('forgot-password/', views.ForgotPasswordView.as_view(), name='forgot-password'),
     path('register/', views.CreateUserView.as_view(), name='register'),
     path('loginGoogle/', views.LoginGoogleView.as_view(), name='loginGoogle'),

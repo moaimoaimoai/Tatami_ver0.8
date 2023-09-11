@@ -17,6 +17,8 @@ import Button from "@mui/joy/Button";
 import { useCookies } from "react-cookie";
 import LoginComponent from "../components/LoginComponent";
 import List from '@material-ui/core/List';
+import AdvertisementView from "../components/AdvertisementView";
+import { SnackbarContext } from "../context/SnackbarContext";
 // import ProfileRecommender from "../components/ProfileRecommender";
 
 
@@ -27,9 +29,11 @@ const Home = (props) => {
     followinguserpost,
     //  monopages,
     followingpage,
+    ads
     //  followinguser
   } = useContext(ApiContext);
 
+  const { newSnack } = useContext(SnackbarContext);
   const [cookies] = useCookies(["current-token"]);
   //   const history = useHistory();
 
@@ -49,19 +53,42 @@ const Home = (props) => {
       <FriendRecommendslider key={user.id} profileeach={user} />
     ));
 
-  const listMonoPosts = followinguserpost.map((post) => (
-    <Postview
-      key={post.id}
-      postData={post}
-      profileData={profiles.find((item) => {
-        return item.userProfile === post.userPost;
-      })}
-      reposting={post.reposting}
-      repostingProfileData={profiles.find((item) => {
-        return item.userProfile === post.repostingFromUser;
-      })}
-    />
+
+  const getSpecificProfile = (id) => {
+    return profiles.filter((item) => { return item.userProfile === id })[0];
+  }
+
+  let listMonoPosts = followinguserpost.map((post, index) => (
+    <>
+      <Postview
+        key={post.id}
+        postData={post}
+        profileData={profiles.find((item) => {
+          return item.userProfile === post.userPost;
+        })}
+        reposting={post.reposting}
+        repostingProfileData={profiles.find((item) => {
+          return item.userProfile === post.repostingFromUser;
+        })}
+      />
+      {
+        index % 3 == 2 && parseInt(index / 3) < ads.length ?
+          <AdvertisementView
+            profile={getSpecificProfile(ads[parseInt(index / 3)].userId)}
+            item={ads[parseInt(index / 3)]}
+          /> :
+          <></>
+      }
+    </>
   ));
+
+  const listAds = ads.map((item, key) => {
+    return <AdvertisementView
+      profile={getSpecificProfile(item.userId)}
+      item={item}
+      key={key}
+    />
+  });
 
   // const listMonoPages =
   //     monopages.map(page =>
@@ -70,29 +97,31 @@ const Home = (props) => {
   //         pageData= {page}/>
   //     )
 
-  const listFollowingPages = (
-    <List>
-      {
-        followingpage.map((item) => {
-          return <FollowingPage url={item.pageUrl}/>
-        })
-      }
-    </List>
-  )
+
+  const listFollowingPages =
+    followingpage.map(page =>
+      <FollowingPage
+        key={page.id}
+        monopage={page} />
+    ).slice(0, 2)
 
   const [num, setNum] = useState(1);
   const [display, setDisplay] = useState(null);
 
   const slice = (arr, size) =>
     arr.flatMap((_, i, a) => (i % size ? [] : [a.slice(i, i + size)]));
-  const slicedpostlist = slice(listMonoPosts, 5);
+  const slicedpostlist = slice(listMonoPosts, 3);
 
   const getMorePosts = () => {
     const next = num + 1;
     setNum(next);
-    const slicedpostlistdisplay = slicedpostlist.slice(0, num);
-    const display = slicedpostlistdisplay.map((posts) => <>{posts}</>);
-    setDisplay(display);
+    const slicedpostlistdisplay = slicedpostlist.slice(0, num + 1);
+    const _display = slicedpostlistdisplay.map((posts) => <>{posts}</>);
+    if(listMonoPosts.length > num * 3)
+    {
+      setDisplay(_display);
+      newSnack('success', 'More Views has displayed!!!')
+    }
   };
 
   return (
@@ -142,6 +171,7 @@ const Home = (props) => {
 
                 <HomePicture />
                 {/* {listMonoPages[num]} */}
+                {/* {listAds} */}
                 {num === 1 ? slicedpostlist[0] : display}
                 <div className="card-body p-0 mb-3">
                   <div className="text-center">

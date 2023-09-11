@@ -33,7 +33,7 @@ export const RequestleftEach = ({ prof }) => {
       // getUserInterest();
       // getUserInterest();
       // getUserInterest();
-      history.push(`/specificuserpage/${prof.userProfile}`);
+      history.push(`/user${prof.userProfile}`);
     }
   };
 

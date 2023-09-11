@@ -19,6 +19,7 @@ import { makeStyles } from "@material-ui/core/styles";
 
 import ProfBack from "./ProfBack";
 import { SnackbarContext } from "../context/SnackbarContext";
+import { ErrorOutline } from "@material-ui/icons";
 
 
 export const ASPECT_RATIO = 1 / 1;
@@ -154,7 +155,7 @@ const AccountEach = () => {
     if (!croppedAreaPixels) return;
     try {
       const croppedImage = await getCroppedImg(imgSrc, croppedAreaPixels);
-      const file = new File([croppedImage], `${profile.nickName}.jpg`, {
+      const file = new File([croppedImage], `avatar_upload.jpg`, {
         type: croppedImage.type,
       });
       setCover(file);
@@ -166,14 +167,12 @@ const AccountEach = () => {
   const handleInputChange = () => (event) => {
     const value = event.target.value;
     const name = event.target.name;
-    console.log(name, value);
-    console.log(typeof editedProfile.sex);
     setEditedProfile({ ...editedProfile, [name]: value });
   };
 
   const submit = () => {
     if (!editedProfile.nickName || !editedProfile.caption || !editedProfile.birthday) {
-      newSnack("warning", "You must fulfill your profile");
+      newSnack("warning", "プロフィールを記入してください。");
       return;
     }
     editProfile();
@@ -182,7 +181,6 @@ const AccountEach = () => {
   // console.log("AccountEach", editedProfile.sex);
 
   return (
-
     <div className="main-content bg-lightblue theme-dark-bg right-chat-active">
       {!editedProfile ? <></> :
         <div className="middle-sidebar-bottom">
@@ -226,7 +224,7 @@ const AccountEach = () => {
                     </div>
                   </div>
 
-                  <form action="#">
+                  <form action="#" encType="multipart/form-data">
                     <div className="row">
                       <div className="col-lg-12 ">
                         <div className={classes.root}>
@@ -264,23 +262,13 @@ const AccountEach = () => {
                           )}
                         </div>
                       </div>
-                      <div className="col-lg-12 mb-3">
-                        <ProfBack />
-                      </div>
 
                       <div className="col-lg-12 mb-3">
                         <div className="form-group">
                           <label className="mont-font fw-600 font-xsss mb-2">
                             アカウント名
+                            {editedProfile.nickName ? <></> : <span className="text-danger font-xs">{" "} *</span>}
                           </label>
-                          {
-                            editedProfile.nickName ? <></> :
-                              <div className={clsx(classes.validationWrapper, "rubberBand", "animated")}>
-                                <label className="mont-font fw-600 font-xsss mb-2  text-danger">
-                                  This field must be required
-                                </label>
-                              </div>
-                          }
                           <input
                             type="text"
                             maxLength={20}
@@ -297,17 +285,11 @@ const AccountEach = () => {
                         <div className="form-group">
                           <label className="mont-font fw-600 font-xsss mb-2">
                             生年月日
+                            {editedProfile.birthday ? <></> : <span className="text-danger font-xs">{" "} *</span>}
+
                           </label>
-                          {
-                            editedProfile.birthday ? <></> :
-                              <div className={clsx(classes.validationWrapper, "rubberBand", "animated")}>
-                                <label className="mont-font fw-600 font-xsss mb-2  text-danger">
-                                  This field must be required
-                                </label>
-                              </div>
-                          }
                           <input
-                            type="text"
+                            type="date"
                             className={editedProfile.birthday ? "form-control" : "form-control  border-danger"}
                             value={editedProfile.birthday}
                             name="birthday"
@@ -359,15 +341,9 @@ const AccountEach = () => {
                       <div className="col-lg-12 mb-3">
                         <label className="mont-font fw-600 font-xsss mb-2 text-dark">
                           キャプション
+                          {editedProfile.caption ? <></> : <span className="text-danger font-xs">{" "} *</span>}
+
                         </label>
-                        {
-                          editedProfile.caption ? <></> :
-                            <div className={clsx(classes.validationWrapper, "rubberBand", "animated")}>
-                              <label className="mont-font fw-600 font-xsss mb-2  text-danger">
-                                This field must be required
-                              </label>
-                            </div>
-                        }
                         <textarea
                           className={editedProfile.caption ? "form-control mb-0 p-3 h100 bg-greylight lh-16" :
                             "form-control mb-0 p-3 h100 bg-greylight lh-16 border-danger"}

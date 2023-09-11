@@ -2,9 +2,9 @@ import React, { StrictMode } from "react";
 import { CookiesProvider } from "react-cookie";
 import ApiContextProvider from "./context/ApiContext";
 
-// import { GoogleOAuthProvider } from '@react-oauth/google';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
-import "./main.scss"
+import "./main.scss";
 
 // ユーザー毎の機能
 import Home from "./pages/Home";
@@ -44,29 +44,22 @@ import Analytics from "./pages/Analytics";
 
 import { BrowserRouter, Route } from "react-router-dom";
 
-import { CartProvider } from "use-shopping-cart";
 
 import SnackbarProvider from "./context/SnackbarContext";
 
 const App = () => {
-
   return (
     <SnackbarProvider>
       <BrowserRouter basename="/">
         <ApiContextProvider>
           <StrictMode>
             <CookiesProvider>
-              {/* <GoogleOAuthProvider clientId={process.env.REACT_APP_CLIENTID}> */}
-              <CartProvider
-                mode="payment"
-                cartMode="client-only"
-                stripe='pk_test_51NNq26BweimbndG7ZTF4PRIb3YuirtsHFCP0UqtJiHhnnJojYzAPU87AwNeiqmrtginNR33DRJwGIbk0Ffs8fwdJ00Zv3ekPaK'
-                currency="JPY"
-                successUrl={process.env.REACT_APP_PUBLIC_URL + "/gotpage"}
-                cancelUrl={process.env.REACT_APP_PUBLIC_URL + "/mono"}
-                billingAddressCollection={true}
-              >
+              <GoogleOAuthProvider clientId={process.env.REACT_APP_CLIENTID}>
                 <Route exact path="/login" component={Login} />
+                <Route exact path="/verify/:id/:key" component={EmailVerify} />
+                <Route exact path="/please-verify" component={Verify} />
+                <Route exact path="/forgot" component={ForgotPassword} />
+                <Route exact path="/reset-password/:id/:key" component={ResetPassword} />
                 <Route exact path="/home" component={Home} />
                 <Route exact path="/" component={Home} />
                 <Route exact path="/recommendposts" component={RecommendPosts} />
@@ -80,7 +73,7 @@ const App = () => {
                 <Route exact path="/settings" component={Settings} />
                 <Route exact path="/account" component={Account} />
                 <Route exact path="/analytics" component={Analytics} />
-                <Route exact path="/specificuserpage/:userid" component={SpecificUserpage} />
+                <Route exact path="/user/:userid" component={SpecificUserpage} />
                 <Route exact path="/following" component={Following} />
                 <Route exact path="/mutualfollowing" component={MutualFollowing} />
                 <Route exact path="/followed" component={Followed} />
@@ -89,8 +82,7 @@ const App = () => {
                 <Route exact path="/gotpage" component={GotPage} />
                 <Route exact path="/owningpage" component={OwningPage} />
                 <Route exact path="/owningpages" component={OwningPages} />
-              </CartProvider>
-              {/* </GoogleOAuthProvider> */}
+              </GoogleOAuthProvider>
             </CookiesProvider>
           </StrictMode>
         </ApiContextProvider>

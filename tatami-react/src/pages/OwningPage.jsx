@@ -61,7 +61,6 @@ const OwningPage = () => {
             },
             
         };
-    
     return (
         <Fragment>
             <Header />

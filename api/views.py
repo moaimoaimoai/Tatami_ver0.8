@@ -2,7 +2,7 @@ from rest_framework import generics, authentication, permissions
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
 from . import serializers
-from .models import User, Profile, MonoPage, MonoPost, MonoComment, FriendRequest, UserIntPage, UserIntPost, UserIntComment, UserIntUser, UserIntAttribute, PageAttribute, FollowingPage, AffiliateLinks, UserRecommendedPage, UserRecommendedUser, OwningPage
+from .models import Advertisement, User, Profile, MonoPage, MonoPost, MonoComment, FriendRequest, UserIntPage, UserIntPost, UserIntComment, UserIntUser, UserIntAttribute, PageAttribute, FollowingPage, AffiliateLinks, UserRecommendedPage, UserRecommendedUser, OwningPage
 from django.shortcuts import render
 from django.db.models import Q
 from django.db import connection
@@ -17,23 +17,51 @@ from django.http import JsonResponse
 from rest_framework.authtoken.models import Token
 import random
 from django.template import loader
+import stripe
+from django.conf import settings
+from django.core.mail import send_mail
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 # This method for authentication
 def authenticate(request) :
-    tokenAuthenticator = authentication.TokenAuthentication();
-    request.user = tokenAuthenticator.authenticate(request)[0]
+    tokenAuthenticator = authentication.TokenAuthentication()
+    auth = tokenAuthenticator.authenticate(request)
+    request.user = auth[0]
 
 class CreateUserView(generics.CreateAPIView):
-    # serializer_class = serializers.UserSerializer
-    def create(self, request):
-        # print(User.objects.filter(email = request.data["email"]))
-        user = serializers.UserSerializer(data=request.data)
-        if (user.is_valid()):
-            res = user.save(password=request.data["password"])
-            profile = Profile(userProfile=res)
-            profile.save()
-            return Response("success", status=status.HTTP_201_CREATED)
-        return Response("failed", status=status.HTTP_201_CREATED)
+    serializer_class = serializers.UserSerializer
+
+class StripeCheckoutView(generics.CreateAPIView):
+    def post(self, request):
+        data = json.loads(request.body)
+        SITE_URL = data.get('SITE_URL')
+        pageId = data.get('pageId')
+        encrypted_pageId = signing.dumps(pageId)
+        try:
+            checkout_session = stripe.checkout.Session.create(
+                line_items=[
+                    {
+                        'price': settings.PRICE_ID,
+                        'quantity': 1,
+                    },
+                ],
+                currency="JPY",
+                payment_method_types=['card',],
+                mode='payment',
+                success_url = SITE_URL + '/gotpage?success=true&session_id={CHECKOUT_SESSION_ID}&index=' + encrypted_pageId,
+                cancel_url = SITE_URL + '/mono?canceled=true',
+            )
+            return JsonResponse({'goTo': checkout_session.url})
+        except Exception as e:
+            # Handle the exception and retrieve the error message
+            error_message = str(e)
+            print("error_message")
+            print(error_message)
+            return Response(
+                {'error': 'Something went wrong when creating stripe checkout session'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 class ForgotPasswordView(generics.CreateAPIView):
     def post(self, request):
@@ -58,15 +86,14 @@ class ForgotPasswordView(generics.CreateAPIView):
             # TODO: Update the signature
             'sign': 'The Tatami account team',
         })
-        # print(html_message)
-        # send_mail(
-        #     'Reset your password',
-        #     'You are lucky to receive this mail.',
-        #     'noreply@tatami.com',  # TODO: Update this with your mail id
-        #     [email],  # TODO: Update this with the recipients mail id
-        #     html_message=html_message,
-        #     fail_silently=False,
-        # )
+        send_mail(
+            'Reset your password',
+            'You are lucky to receive this mail.',
+            'noreply@tatami.com',  # TODO: Update this with your mail id
+            [email],  # TODO: Update this with the recipients mail id
+            html_message=html_message,
+            fail_silently=False,
+        )
         return JsonResponse({'message': 'OK'})
 
 class PasswordVerifyView(generics.CreateAPIView):
@@ -180,6 +207,11 @@ class MyProfileListView(generics.ListAPIView):
 
     def get_queryset(self):
         authenticate(self.request)
+        data = self.queryset.filter(userProfile=self.request.user)
+        print(data)
+        if not data:
+            profile = Profile(userProfile=self.request.user)
+            profile.save()
         return self.queryset.filter(userProfile=self.request.user)
 
 
@@ -208,6 +240,8 @@ class MonoPageViewSet(viewsets.ModelViewSet):
 class MonoPostViewSet(viewsets.ModelViewSet):
     queryset = MonoPost.objects.all().order_by("-created_on")
     serializer_class = serializers.MonoPostSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def perform_create(self, serializer):
         authenticate(self.request)
@@ -250,6 +284,8 @@ class MonoCommentViewSet(viewsets.ModelViewSet):
 class UserIntPageViewSet(viewsets.ModelViewSet):
     queryset = UserIntPage.objects.all()
     serializer_class = serializers.UserIntPageSerializer
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
         return self.queryset.filter().order_by("-created_on")
@@ -394,4 +430,48 @@ class OwningPageViewSet(viewsets.ModelViewSet):
         return self.queryset.filter(userId=self.request.user).order_by("-created_on")
 
     def perform_create(self, serializer):
+        encrypted_number = self.request.data.get('encrypted_pageId')
+        number = signing.loads(encrypted_number)
+        mono_page = MonoPage.objects.get(id=number)
+        serializer.validated_data['pageId'] = mono_page
         serializer.save(userId=self.request.user)
+
+class AdvertisementViewSet(viewsets.ModelViewSet):
+    queryset = Advertisement.objects.all()
+    serializer_class = serializers.AdvertisementSerializer
+
+    def perform_create(self, serializer):
+        authenticate(self.request)
+        serializer.save(userId=self.request.user)
+
+class UpdateAdvertisementViewSet(viewsets.ModelViewSet):
+    queryset = Advertisement.objects.all()
+    serializer_class = serializers.AdvertisementSerializer
+
+    def create(self, request):
+        authenticate(request)
+        if (request.data["updateCnt"] == 1):
+            cursor = connection.cursor()
+            cursor.execute("UPDATE api_advertisement SET cnt = cnt+1 where id=" + str(request.data["adsId"]))
+            cursor.fetchone()
+            return Response("success", status=status.HTTP_200_OK)
+        elif (request.data["updateDelFlag"] == 1):
+            cursor = connection.cursor()
+            cursor.execute("UPDATE api_advertisement SET del_flag = 1 where id=" + str(request.data["adsId"]))
+            cursor.fetchone()
+            return Response("success", status=status.HTTP_200_OK)
+
+class MyExampleViewSet(viewsets.ModelViewSet):
+    queryset = Advertisement.objects.all()
+    serializer_class = serializers.AdvertisementSerializer
+
+    def get_queryset(self):
+        return self.queryset.filter().order_by("-created_on")
+
+    def put(self, serializer):
+        print('1')
+        return Response("hello", status=status.HTTP_400_BAD_REQUEST)
+        # serializer.save(userId=self.request.user)
+
+    def create(self, request):
+        return Response("hello", status=status.HTTP_400_BAD_REQUEST)

@@ -12,11 +12,14 @@ import LinearProgress from "@mui/joy/LinearProgress";
 import MonoPicture from "../components/MonoPicture";
 import Createpost from "../components/Createpost";
 import Postview from "./Postview";
+import AdvertisementView from "../components/AdvertisementView";
 import { ApiContext } from "../context/ApiContext";
 import Button from "@mui/joy/Button";
 import { useCookies } from "react-cookie";
 import LoginComponent from "../components/LoginComponent";
-import { useHistory, useParams, useLocation } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
+import copy from '../context/clipboard';
+import { SnackbarContext } from "../context/SnackbarContext";
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -24,21 +27,29 @@ const useStyles = makeStyles((theme) => {
       backgroundColor: green.A700,
       "&:hover": {
         backgroundColor: green.A400,
-      },
-      position: "fixed",
-      right: "10px",
-      bottom: "10px",
+      }
     },
+    PostButtonContainer: {
+      position: "fixed",
+      width: "100%",
+      zIndex: "999",
+      left: "0px",
+      bottom: "10px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center"
+    }
   };
 });
 
 const Mono = () => {
   const history = useHistory();
   const classes = useStyles();
+  const { newSnack } = useContext(SnackbarContext);
   const [isOpen, setOpen] = useState(false);
 
   const { pageid } = useParams();
-  const { pathname } = useLocation();
+
 
   // const hotelsettings = {
   //     arrows: false,
@@ -73,30 +84,55 @@ const Mono = () => {
     owningpage,
     getUserInterest,
     newUserIntPage,
+    ads,
+    getAds
   } = useContext(ApiContext);
 
   useEffect(() => {
     newUserIntPage(pageid);
-    window.scrollTo({left: 0, top: 0});
+    getAds();
+    window.scrollTo({ left: 0, top: 0 });
   }, [pageid])
 
   const [cookies] = useCookies(["current-token"]);
 
+  const getSpecificProfile = (id) => {
+    if (profiles.length == 0) return;
+    return profiles.filter((item) => { return item.userProfile === id })[0];
+  }
+
+  const sharePage = () => {
+    copy(window.location.href);
+    newSnack("info", "リンクをコピーしました。");
+  }
+
   const listMonoPosts =
     profiles &&
-    postsforintpage.map((post, index) => (
-      <Postview
-        key={index}
-        postData={post}
-        profileData={profiles.find((item) => {
-          return item.userProfile === Number(post.userPost);
-        })}
-        reposting={post.reposting}
-        repostingProfileData={profiles.find((item) => {
-          return item.userProfile === post.repostingFromUser;
-        })}
-      />
-    ));
+    postsforintpage.map((post, index) => {
+      return (
+        <>
+          <Postview
+            key={index}
+            postData={post}
+            profileData={profiles.find((item) => {
+              return item.userProfile === Number(post.userPost);
+            })}
+            reposting={post.reposting}
+            repostingProfileData={profiles.find((item) => {
+              return item.userProfile === post.repostingFromUser;
+            })}
+          />
+          {
+            index % 3 == 2 && parseInt(index / 3) < ads.length ?
+              <AdvertisementView
+                profile={getSpecificProfile(ads[parseInt(index / 3)].userId)}
+                item={ads[parseInt(index / 3)]}
+              /> :
+              <></>
+          }
+        </>
+      )
+    });
 
   const [num, setNum] = useState(1);
   const [display, setDisplay] = useState(null);
@@ -104,21 +140,24 @@ const Mono = () => {
   const slice = (arr, size) =>
     arr.flatMap((_, i, a) => (i % size ? [] : [a.slice(i, i + size)]));
 
-  const slicedpostlist = slice(listMonoPosts, 5);
+  const slicedpostlist = slice(listMonoPosts, 3);
 
   const getMorePosts = () => {
     const next = num + 1;
     setNum(next);
-    const slicedpostlistdisplay = slicedpostlist.slice(0, num);
-    const display = slicedpostlistdisplay.map((posts) => <>{posts}</>);
-    setDisplay(display);
+    const slicedpostlistdisplay = slicedpostlist.slice(0, num + 1);
+    const _display = slicedpostlistdisplay.map((posts) => <>{posts}</>);
+    if (listMonoPosts.length > num * 3) {
+      setDisplay(_display);
+      newSnack('success', 'More Views has displayed!!!')
+    }
   };
 
   const toGetPage = () => {
-    const createdIntData = new FormData();
-    createdIntData.append("intPageId", intpage.intPageId);
-    newUserIntPage(createdIntData);
-    getUserInterest();
+    // const createdIntData = new FormData();
+    // createdIntData.append("intPageId", intpage.intPageId);
+    newUserIntPage(pageid);
+    // getUserInterest();
     // getUserInterest();
     // getUserInterest();
     // getUserInterest();
@@ -126,10 +165,10 @@ const Mono = () => {
   };
 
   const toOwnPage = () => {
-    const createdIntData = new FormData();
-    createdIntData.append("intPageId", intpage.intPageId);
-    newUserIntPage(createdIntData);
-    getUserInterest();
+    // const createdIntData = new FormData();
+    // createdIntData.append("intPageId", pageid);
+    newUserIntPage(pageid);
+    // getUserInterest();
     // getUserInterest();
     // getUserInterest();
     // getUserInterest();
@@ -145,9 +184,8 @@ const Mono = () => {
   }
   const rate = Math.round(sum / rates.length);
 
-  const isfollow = followingpage.find((item) => {
-    return item.pageUrl === pathname;
-  });
+  const isfollow =
+    followingpage.find(item => { return item.id === intpage.id })
 
   const isown = owningpage.find((item) => {
     return item.id === intpage.id;
@@ -169,19 +207,21 @@ const Mono = () => {
       <div className="main-content right-chat-active">
         <div className="middle-sidebar-bottom">
           <div className="middle-sidebar-left pe-0">
-            <Tooltip title="Post Comment" placement="top-start">
-              {profile.id ? (
-                <Fab
-                  color="secondary"
-                  className={classes.PostButton}
-                  onClick={openDialog}
-                >
-                  <TelegramIcon />
-                </Fab>
-              ) : (
-                <></>
-              )}
-            </Tooltip>
+          	<div className={ classes.PostButtonContainer }>
+	            <Tooltip title="Post Comment" placement="top-start">
+	              {profile.id ? (
+	                <Fab
+	                  color="secondary"
+	                  className={classes.PostButton}
+	                  onClick={openDialog}
+	                >
+	                  <TelegramIcon />
+	                </Fab>
+	              ) : (
+	                <></>
+	              )}
+	            </Tooltip>
+          	</div>
             <div className="row">
               <div className="col-xl-8 col-xxl-9 col-lg-8">
                 <div className="pe-2">
@@ -220,7 +260,7 @@ const Mono = () => {
                                     <a href="/defaulthoteldetails" className="btn-round-lg ms-2 d-inline-block rounded-3 bg-danger"><i className="feather-bookmark font-sm text-white"></i> </a> */}
                     {!isfollow ? (
                       <Button
-                        className="bg-success  border-0 text-white fw-600 text-uppercase font-xssss float-left rounded-3 d-inline-block mt-0 p-2 lh-34 text-center pointer ls-3 w200 mb-3"
+                        className="bg-success me-1 border-0 text-white fw-600 text-uppercase font-xssss float-left rounded-3 d-inline-block mt-0 p-2 lh-34 text-center pointer ls-3 w200 mb-3"
                         onClick={() => followPage()}
                       >
                         この話題をフォロー
@@ -233,6 +273,13 @@ const Mono = () => {
                         フォロー済み
                       </Button>
                     )}
+
+                    <Button
+                      className="bg-success  border-0 text-white fw-600 text-uppercase font-xssss float-left rounded-3 d-inline-block mt-0 p-2 lh-34 text-center pointer ls-3 w200 mb-3"
+                      onClick={sharePage}
+                    >
+                      ページのLinkをシェア
+                    </Button>
                   </div>
 
                   <div className="card w-100 border-0 mt-3 mb-4 p-lg-4 p-3 shadow-xss position-relative rounded-3 bg-white">

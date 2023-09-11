@@ -5,8 +5,8 @@ import Commentview from "./Commentview";
 import Createcomment from "../components/Createcomment";
 import LinearProgress from "@mui/joy/LinearProgress";
 import Lightbox from "react-image-lightbox";
-import { Grid } from "@material-ui/core";
-import Button from "@mui/joy/Button";
+import { Grid, Dialog, DialogContent, DialogContentText, DialogActions, DialogTitle, Button } from "@material-ui/core";
+// import Button from "@mui/joy/Button";
 
 const Postview = ({
   postData,
@@ -32,11 +32,17 @@ const Postview = ({
   } = useContext(ApiContext);
 
   const [isOpen, setIsOpen] = useState(false);
+  const [isDelModal, showDelModal] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
   // const [tab1, setTab1] = useState(0)
 
   // console.log("profileData", profileData);
   // console.log("profile", profile);
+
+  const onDeleteMonoPost = () => {
+    deleteMonopost(postData.id)
+    showDelModal(false);
+  }
 
   const toSpecificUserPage = () => {
     if (profile.userProfile === profileData.userProfile) {
@@ -50,7 +56,7 @@ const Postview = ({
       // getUserInterest();
       // getUserInterest();
       // getUserInterest();
-      history.push(`/specificuserpage/${profileData.userProfile}`);
+      history.push(`/user/${profileData.userProfile}`);
     }
   };
 
@@ -64,7 +70,7 @@ const Postview = ({
       newUserIntUser(createdIntData);
       console.log("ちがう");
       getUserInterest();
-      history.push("/specificuserpage");
+      history.push("/user");
     }
   };
 
@@ -104,6 +110,26 @@ const Postview = ({
 
   return (
     <div className="card w-100 shadow-xss rounded-xxl border-0 ps-3 pe-3 pt-3 pb-2 mb-3">
+      <Dialog
+        open={isDelModal}
+        onClose={() => showDelModal(false)}
+        aria-labelledby="responsive-dialog-title"
+      >
+        <DialogTitle id="responsive-dialog-title">{"Delete Post"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Do you really delete this post?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={() => onDeleteMonoPost()} color="primary">
+            Ok
+          </Button>
+          <Button onClick={() => showDelModal(false)} color="primary" autoFocus>
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
       {!reposting ? (
         <div className="relative">
           <div className="card-body ps-1 pe-1 pt-0 pb-0 d-flex relative">
@@ -268,10 +294,8 @@ const Postview = ({
 
           {profile.userProfile === profileData.userProfile ? (
             <div
-              className="position-absolute right-0 top-5 pointer"
-              onClick={() => {
-                deleteMonopost(postData.id);
-              }}
+              className="position-absolute right-0 top-5 pointer me-1"
+              onClick={() => showDelModal(true)}
             >
               <i className="ti-close font-xssss btn-round-xs bg-success text-white"></i>
             </div>
@@ -465,7 +489,7 @@ const Postview = ({
           </div>
           {profile.userProfile === profileData.userProfile ? (
             <div
-              className="position-absolute right-0 top-5 pointer"
+              className="position-absolute right-0 top-5 pointer me-1"
               onClick={() => {
                 deleteMonopost(postData.id);
               }}

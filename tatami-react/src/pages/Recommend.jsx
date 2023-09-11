@@ -1,4 +1,4 @@
-import React, { Fragment, useContext } from "react";
+import React, { Fragment, useContext, useEffect } from "react";
 import Header from "../components/Header";
 import Leftnav from "../components/Leftnav";
 import Appfooter from "../components/Appfooter";
@@ -11,7 +11,7 @@ import LoginComponent from "../components/LoginComponent";
 import ProfileRecommender from "../components/ProfileRecommender";
 
 const Recommend = () => {
-  const { monopages, pageattribute, pagesforintattribute, profile } =
+  const { monopages, pageattribute, pagesforintattribute, profile, getMonoPages, getPagesForIntAttribute } =
     useContext(ApiContext);
   const [cookies] = useCookies(["current-token"]);
   const defaultshowpages = monopages.map((page) => (
@@ -26,6 +26,11 @@ const Recommend = () => {
   const listattributes = pageattribute
     .map((attribute, index) => <AttributeEach key={index} attributeData={attribute} />)
     .slice(0, 5);
+
+  useEffect(() => {
+    getMonoPages();
+    getPagesForIntAttribute();
+  }, [])
 
   return (
     <Fragment>
@@ -71,7 +76,8 @@ const Recommend = () => {
                   </div>
                   <div className="col-xl-8 col-xxl-9 col-lg-8">
                     <div className="row mb-3 pe-3 ps-2 d-flex">
-                      {pagesforintattribute ? listshowpages : defaultshowpages}
+                      {/* {defaultshowpages} */}
+                      {pagesforintattribute && pagesforintattribute.length ? listshowpages : defaultshowpages}
                     </div>
 
                     <div className="card-body p-0 mb-3">

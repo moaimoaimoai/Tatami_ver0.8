@@ -10,6 +10,8 @@ export const ApiContext = createContext();
 const ApiContextProvider = (props) => {
 
   const history = useHistory();
+  const [ads, setAds] = useState([]);
+  const [userAds, setUserAds] = useState([]);
   const [token, setUserToken] = useState(props.cookies.get("current-token"));
   const [profile, setProfile] = useState([]);
   const [profiles, setProfiles] = useState([]);
@@ -65,24 +67,28 @@ const ApiContextProvider = (props) => {
     // console.log("UseEffect");
     const getMyProfile = async () => {
       try {
-        console.log("getMyProfile");
+        if (!token) return;
         const resmy = await axios.get(
-          "http://localhost:8000/api/user/myprofile/",
+          process.env.REACT_APP_API_URL + "/api/user/myprofile/",
           {
             headers: {
               Authorization: `Token ${token}`,
             },
           }
         );
+        if (resmy.data[0] && resmy.data[0].birth === null) {
+          newSnack("info", "プロフィールを記入してください。");
+          history.push('/account');
+        }
         const res = await axios.get(
-          "http://localhost:8000/api/user/approval/",
+          process.env.REACT_APP_API_URL + "/api/user/approval/",
           {
             headers: {
               Authorization: `Token ${token}`,
             },
           }
         );
-        // console.log("getMyProfile", resmy.data[0].sex);
+
         resmy.data[0] && setProfile(resmy.data[0]);
         resmy.data[0] &&
           setEditedProfile({
@@ -100,10 +106,7 @@ const ApiContextProvider = (props) => {
           );
         setAskListFull(res.data);
         // console.log("GetMyProfile", resmy.data[0].birth);
-        if (resmy.data[0] && resmy.data[0].birth === null) {
-          newSnack("info", "Your must fulfill your profile first!");
-          history.push('/account');
-        }
+
         // if (resmy.data[0].birth === null && window.location != '/account') window.location = '/acoount';
       } catch {
         console.log("error-getMyProfile");
@@ -113,7 +116,7 @@ const ApiContextProvider = (props) => {
     {
       // const getFriendRequest = async () => {
       //   try {
-      //     const resreqall = await axios.get("http://localhost:8000/api/user/approval/", {
+      //     const resreqall = await axios.get(process.env.REACT_APP_API_URL + "/api/user/approval/", {
       //       headers: {
       //         Authorization: `Token ${token}`,
       //       },
@@ -138,7 +141,7 @@ const ApiContextProvider = (props) => {
 
       // const getProfile = async () => {
       //   try {
-      //     const res = await axios.get("http://localhost:8000/api/user/profile/", {
+      //     const res = await axios.get(process.env.REACT_APP_API_URL + "/api/user/profile/", {
       //       headers: {
       //         Authorization: `Token ${token}`,
       //       },
@@ -153,7 +156,7 @@ const ApiContextProvider = (props) => {
       // const getMonoPages = async () => {
       //   try {
       //     console.log("getMonoPages")
-      //     const res = await axios.get("http://localhost:8000/api/user/monopage/", {
+      //     const res = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopage/", {
       //       headers: {
       //         Authorization: `Token ${token}`,
       //       },
@@ -165,7 +168,7 @@ const ApiContextProvider = (props) => {
       // }
       // const getMonoPosts = async () => {
       //   try {
-      //     const res = await axios.get("http://localhost:8000/api/user/monopost/", {
+      //     const res = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopost/", {
       //       headers: {
       //         Authorization: `Token ${token}`,
       //       },
@@ -178,7 +181,7 @@ const ApiContextProvider = (props) => {
 
       // const getMonoComments = async () => {
       //   try {
-      //     const res = await axios.get("http://localhost:8000/api/user/monocomment/", {
+      //     const res = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monocomment/", {
       //       headers: {
       //         Authorization: `Token ${token}`,
       //       },
@@ -192,7 +195,7 @@ const ApiContextProvider = (props) => {
 
     const getAttribute = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/api/user/pageattribute/", {
+        const res = await axios.get(process.env.REACT_APP_API_URL + "/api/user/pageattribute/", {
           headers: {
             Authorization: `Token ${token}`,
           },
@@ -206,12 +209,12 @@ const ApiContextProvider = (props) => {
     {
       // const getFollowingUserPosts = async () => {
       //   try {
-      //     const respost = await axios.get("http://localhost:8000/api/user/monopost/", {
+      //     const respost = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopost/", {
       //       headers: {
       //         Authorization: `Token ${token}`,
       //       },
       //     })
-      //     const resreqall = await axios.get("http://localhost:8000/api/user/approval/", {
+      //     const resreqall = await axios.get(process.env.REACT_APP_API_URL + "/api/user/approval/", {
       //       headers: {
       //         Authorization: `Token ${token}`,
       //       },
@@ -239,12 +242,12 @@ const ApiContextProvider = (props) => {
 
       // const getFollowingUser = async () => {
       //   try {
-      //     const resreqall = await axios.get("http://localhost:8000/api/user/approval/", {
+      //     const resreqall = await axios.get(process.env.REACT_APP_API_URL + "/api/user/approval/", {
       //       headers: {
       //         Authorization: `Token ${token}`,
       //       },
       //     });
-      //     const resprof = await axios.get("http://localhost:8000/api/user/profile/", {
+      //     const resprof = await axios.get(process.env.REACT_APP_API_URL + "/api/user/profile/", {
       //       headers: {
       //         Authorization: `Token ${token}`,
       //       },
@@ -272,12 +275,12 @@ const ApiContextProvider = (props) => {
 
       // const getFollowedUser = async () => {
       //   try {
-      //     const resreqall = await axios.get("http://localhost:8000/api/user/approval/", {
+      //     const resreqall = await axios.get(process.env.REACT_APP_API_URL + "/api/user/approval/", {
       //       headers: {
       //         Authorization: `Token ${token}`,
       //       },
       //     });
-      //     const resprof = await axios.get("http://localhost:8000/api/user/profile/", {
+      //     const resprof = await axios.get(process.env.REACT_APP_API_URL + "/api/user/profile/", {
       //       headers: {
       //         Authorization: `Token ${token}`,
       //       },
@@ -302,12 +305,12 @@ const ApiContextProvider = (props) => {
 
       // const getMutualFollowingUser = async () => {
       //   try {
-      //     const resreqall = await axios.get("http://localhost:8000/api/user/approval/", {
+      //     const resreqall = await axios.get(process.env.REACT_APP_API_URL + "/api/user/approval/", {
       //       headers: {
       //         Authorization: `Token ${token}`,
       //       },
       //     });
-      //     const resprof = await axios.get("http://localhost:8000/api/user/profile/", {
+      //     const resprof = await axios.get(process.env.REACT_APP_API_URL + "/api/user/profile/", {
       //       headers: {
       //         Authorization: `Token ${token}`,
       //       },
@@ -336,12 +339,12 @@ const ApiContextProvider = (props) => {
 
       // const getFollowingPage = async () => {
       //   try {
-      //     const respage = await axios.get("http://localhost:8000/api/user/monopage/", {
+      //     const respage = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopage/", {
       //       headers: {
       //         Authorization: `Token ${token}`,
       //       },
       //     });
-      //     const resfollow = await axios.get("http://localhost:8000/api/user/followingpage/", {
+      //     const resfollow = await axios.get(process.env.REACT_APP_API_URL + "/api/user/followingpage/", {
       //       headers: {
       //         Authorization: `Token ${token}`,
       //       },
@@ -360,12 +363,12 @@ const ApiContextProvider = (props) => {
 
       // const getOwningPage = async () => {
       //   try {
-      //     const respage = await axios.get("http://localhost:8000/api/user/monopage/", {
+      //     const respage = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopage/", {
       //       headers: {
       //         Authorization: `Token ${token}`,
       //       },
       //     });
-      //     const resown = await axios.get("http://localhost:8000/api/user/owningpage/", {
+      //     const resown = await axios.get(process.env.REACT_APP_API_URL + "/api/user/owningpage/", {
       //       headers: {
       //         Authorization: `Token ${token}`,
       //       },
@@ -414,37 +417,37 @@ const ApiContextProvider = (props) => {
       //         Authorization: `Token ${token}`,
       //       },
       //     })
-      //     const resintattribute = await axios.get("http://localhost:8000/api/user/userintattribute/", {
+      //     const resintattribute = await axios.get(process.env.REACT_APP_API_URL + "/api/user/userintattribute/", {
       //       headers: {
       //         Authorization: `Token ${token}`,
       //       },
       //     })
-      //     const respage = await axios.get("http://localhost:8000/api/user/monopage/", {
+      //     const respage = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopage/", {
       //       headers :{
       //         Authorization: `Token ${token}`,
       //       },
       //     });
-      //     const respost = await axios.get("http://localhost:8000/api/user/monopost/", {
+      //     const respost = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopost/", {
       //       headers: {
       //         Authorization: `Token ${token}`,
       //       },
       //     })
-      //     // const resuser = await axios.get("http://localhost:8000/api/user/profile/", {
+      //     // const resuser = await axios.get(process.env.REACT_APP_API_URL + "/api/user/profile/", {
       //     //   headers: {
       //     //     Authorization: `Token ${token}`,
       //     //   },
       //     // })
-      //     const rescomment = await axios.get("http://localhost:8000/api/user/monocomment/", {
+      //     const rescomment = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monocomment/", {
       //       headers: {
       //         Authorization: `Token ${token}`,
       //       },
       //     })
-      //     const resattribute = await axios.get("http://localhost:8000/api/user/pageattribute/", {
+      //     const resattribute = await axios.get(process.env.REACT_APP_API_URL + "/api/user/pageattribute/", {
       //       headers: {
       //         Authorization: `Token ${token}`,
       //       },
       //     })
-      //     const resaf = await axios.get("http://localhost:8000/api/user/affiliatelinks/", {
+      //     const resaf = await axios.get(process.env.REACT_APP_API_URL + "/api/user/affiliatelinks/", {
       //       headers: {
       //         Authorization: `Token ${token}`,
       //       },
@@ -506,6 +509,7 @@ const ApiContextProvider = (props) => {
       // }
     }
 
+    getMyProfile();
     getMonoComments();
     getProfile();
     getMonoPages();
@@ -518,20 +522,20 @@ const ApiContextProvider = (props) => {
     getFollowingUser();
     getMutualFollowingUser();
     getFollowedUser();
-    getUserInterest();
-    getMyProfile();
+    // getUserInterest();
+    getAds();
 
-  }, [token, profile.id, profile.userProfile]);
+  }, [token, profile.id, profile.userProfile]); //// Problem -> Add some text ***profile.id, profile.userProfile***
 
 
   const getFollowingPage = async () => {
     try {
-      // const respage = await axios.get("http://localhost:8000/api/user/monopage/", {
+      // const respage = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopage/", {
       //   headers: {
       //     Authorization: `Token ${token}`,
       //   },
       // });
-      const resfollow = await axios.get("http://localhost:8000/api/user/followingpage/", {
+      const resfollow = await axios.get(process.env.REACT_APP_API_URL + "/api/user/followingpage/", {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -555,12 +559,12 @@ const ApiContextProvider = (props) => {
 
   const getOwningPage = async () => {
     try {
-      const respage = await axios.get("http://localhost:8000/api/user/monopage/", {
+      const respage = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopage/", {
         headers: {
           Authorization: `Token ${token}`,
         },
       });
-      const resown = await axios.get("http://localhost:8000/api/user/owningpage/", {
+      const resown = await axios.get(process.env.REACT_APP_API_URL + "/api/user/owningpage/", {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -580,19 +584,19 @@ const ApiContextProvider = (props) => {
   const getFollowingUser = async () => {
     try {
       const resmy = await axios.get(
-        "http://localhost:8000/api/user/myprofile/",
+        process.env.REACT_APP_API_URL + "/api/user/myprofile/",
         {
           headers: {
             Authorization: `Token ${token}`,
           },
         }
       );
-      const resreqall = await axios.get("http://localhost:8000/api/user/approval/", {
+      const resreqall = await axios.get(process.env.REACT_APP_API_URL + "/api/user/approval/", {
         headers: {
           Authorization: `Token ${token}`,
         },
       });
-      const resprof = await axios.get("http://localhost:8000/api/user/profile/", {
+      const resprof = await axios.get(process.env.REACT_APP_API_URL + "/api/user/profile/", {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -626,19 +630,19 @@ const ApiContextProvider = (props) => {
   const getFollowedUser = async () => {
     try {
       const resmy = await axios.get(
-        "http://localhost:8000/api/user/myprofile/",
+        process.env.REACT_APP_API_URL + "/api/user/myprofile/",
         {
           headers: {
             Authorization: `Token ${token}`,
           },
         }
       );
-      const resreqall = await axios.get("http://localhost:8000/api/user/approval/", {
+      const resreqall = await axios.get(process.env.REACT_APP_API_URL + "/api/user/approval/", {
         headers: {
           Authorization: `Token ${token}`,
         },
       });
-      const resprof = await axios.get("http://localhost:8000/api/user/profile/", {
+      const resprof = await axios.get(process.env.REACT_APP_API_URL + "/api/user/profile/", {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -665,12 +669,12 @@ const ApiContextProvider = (props) => {
 
   const getMutualFollowingUser = async () => {
     try {
-      const resreqall = await axios.get("http://localhost:8000/api/user/approval/", {
+      const resreqall = await axios.get(process.env.REACT_APP_API_URL + "/api/user/approval/", {
         headers: {
           Authorization: `Token ${token}`,
         },
       });
-      const resprof = await axios.get("http://localhost:8000/api/user/profile/", {
+      const resprof = await axios.get(process.env.REACT_APP_API_URL + "/api/user/profile/", {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -699,7 +703,7 @@ const ApiContextProvider = (props) => {
   const getFriendRequest = async () => {
     try {
 
-      const resreqall = await axios.get("http://localhost:8000/api/user/approval/", {
+      const resreqall = await axios.get(process.env.REACT_APP_API_URL + "/api/user/approval/", {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -724,7 +728,7 @@ const ApiContextProvider = (props) => {
   const getProfile = async () => {
     try {
       // console.log("getProfile");
-      const res = await axios.get("http://localhost:8000/api/user/profile/", {
+      const res = await axios.get(process.env.REACT_APP_API_URL + "/api/user/profile/", {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -737,7 +741,7 @@ const ApiContextProvider = (props) => {
 
   const getMonoPages = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/user/monopage/", {
+      const res = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopage/", {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -749,7 +753,7 @@ const ApiContextProvider = (props) => {
   }
   const getMonoPosts = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/user/monopost/", {
+      const res = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopost/", {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -762,12 +766,12 @@ const ApiContextProvider = (props) => {
 
   const getFollowingUserPosts = async () => {
     try {
-      const respost = await axios.get("http://localhost:8000/api/user/monopost/", {
+      const respost = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopost/", {
         headers: {
           Authorization: `Token ${token}`,
         },
       })
-      const resreqall = await axios.get("http://localhost:8000/api/user/approval/", {
+      const resreqall = await axios.get(process.env.REACT_APP_API_URL + "/api/user/approval/", {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -795,7 +799,7 @@ const ApiContextProvider = (props) => {
 
   const getMonoComments = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/user/monocomment/", {
+      const res = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monocomment/", {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -810,64 +814,64 @@ const ApiContextProvider = (props) => {
     try {
       // console.log("GetUserInterest");
       const resintpage = await axios.get(
-        'http://localhost:8000/api/user/userintpage/',
+        process.env.REACT_APP_API_URL + "/api/user/userintpage/",
         {
           headers: {
             Authorization: `Token ${token}`,
           },
         })
       const resintpost = await axios.get(
-        'http://localhost:8000/api/user/userintpost/',
+        process.env.REACT_APP_API_URL + "/api/user/userintpost/",
         {
           headers: {
             Authorization: `Token ${token}`,
           },
         })
       const resintcomment = await axios.get(
-        'http://localhost:8000/api/user/userintcomment/',
+        process.env.REACT_APP_API_URL + "/api/user/userintcomment/",
         {
           headers: {
             Authorization: `Token ${token}`,
           },
         })
       const resintuser = await axios.get(
-        'http://localhost:8000/api/user/userintuser/',
+        process.env.REACT_APP_API_URL + "/api/user/userintuser/",
         {
           headers: {
             Authorization: `Token ${token}`,
           },
         })
-      const resintattribute = await axios.get("http://localhost:8000/api/user/userintattribute/", {
+      const resintattribute = await axios.get(process.env.REACT_APP_API_URL + "/api/user/userintattribute/", {
         headers: {
           Authorization: `Token ${token}`,
         },
       })
-      const respage = await axios.get("http://localhost:8000/api/user/monopage/", {
+      const respage = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopage/", {
         headers: {
           Authorization: `Token ${token}`,
         },
       });
-      const respost = await axios.get("http://localhost:8000/api/user/monopost/", {
+      const respost = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopost/", {
         headers: {
           Authorization: `Token ${token}`,
         },
       })
-      const resuser = await axios.get("http://localhost:8000/api/user/profile/", {
+      const resuser = await axios.get(process.env.REACT_APP_API_URL + "/api/user/profile/", {
         headers: {
           Authorization: `Token ${token}`,
         },
       })
-      const rescomment = await axios.get("http://localhost:8000/api/user/monocomment/", {
+      const rescomment = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monocomment/", {
         headers: {
           Authorization: `Token ${token}`,
         },
       })
-      const resattribute = await axios.get("http://localhost:8000/api/user/pageattribute/", {
+      const resattribute = await axios.get(process.env.REACT_APP_API_URL + "/api/user/pageattribute/", {
         headers: {
           Authorization: `Token ${token}`,
         },
       })
-      const resaf = await axios.get("http://localhost:8000/api/user/affiliatelinks/", {
+      const resaf = await axios.get(process.env.REACT_APP_API_URL + "/api/user/affiliatelinks/", {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -933,7 +937,7 @@ const ApiContextProvider = (props) => {
     coverBack.name && createData.append("imgBackground", coverBack, coverBack.name);
     try {
       const res = await axios.post(
-        "http://localhost:8000/api/user/profile/",
+        process.env.REACT_APP_API_URL + "/api/user/profile/",
         createData,
         {
           headers: {
@@ -959,7 +963,7 @@ const ApiContextProvider = (props) => {
     // console.log(createData)
     try {
       const res = await axios.post(
-        "http://localhost:8000/api/user/monopost/",
+        process.env.REACT_APP_API_URL + "/api/user/monopost/",
         createData,
         {
           headers: {
@@ -968,8 +972,8 @@ const ApiContextProvider = (props) => {
           },
         }
       )
-      newSnack("success", "Post Success!");
-      const resMonoPosts = await axios.get("http://localhost:8000/api/user/monopost/", {
+      newSnack("success", "ポストが投稿されました。");
+      const resMonoPosts = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopost/", {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -982,7 +986,7 @@ const ApiContextProvider = (props) => {
       // console.log("CreateMonopost", postsforintpage);
       // getUserInterest()
     } catch {
-      newSnack("error", "Post Failed!");
+      newSnack("error", "投稿が失敗しました。");
       console.log("error-createMonoPost")
     }
   }
@@ -999,7 +1003,7 @@ const ApiContextProvider = (props) => {
     targetpost.img && createData.append("text", targetpost.text + '  【画像付き】')
     try {
       const res = await axios.post(
-        "http://localhost:8000/api/user/monopost/",
+        process.env.REACT_APP_API_URL + "/api/user/monopost/",
         createData,
         {
           headers: {
@@ -1025,7 +1029,7 @@ const ApiContextProvider = (props) => {
     createData.append("post", createdcomment.post)
     try {
       const res = await axios.post(
-        "http://localhost:8000/api/user/monocomment/",
+        process.env.REACT_APP_API_URL + "/api/user/monocomment/",
         createData,
         {
           headers: {
@@ -1045,7 +1049,7 @@ const ApiContextProvider = (props) => {
   const deleteMonopost = async (deletepostid) => {
     try {
       await axios.delete(
-        `http://localhost:8000/api/user/monopost/${deletepostid}/`,
+        process.env.REACT_APP_API_URL + `/api/user/monopost/${deletepostid}/`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -1059,16 +1063,38 @@ const ApiContextProvider = (props) => {
       getFollowingUserPosts();
       // getMonoPosts();
       // getUserInterest();
-      newSnack("success", "Delete Success!");
+      newSnack("success", "削除しました。");
     } catch {
-      newSnack("error", "Delete Failed!");
+      newSnack("error", "削除が失敗しました。");
       console.log("error-deleteMonopost");
     };
   };
 
+  const getPagesForIntAttribute = async () => {
+    try {
+      const respage = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopage/", {
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      });
+      const resintattribute = await axios.get(process.env.REACT_APP_API_URL + "/api/user/userintattribute/", {
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      })
+      setPagesforintattribute(respage.data.filter((each) => {
+        // console.log("each ", each);
+        return each.attribute.includes(resintattribute.data[0].intAttributeId)
+      }));
+    }
+    catch {
+      console.log("error-getPagesForIntAttribute");
+    }
+  }
+
   const getSpecificProfile = async (userid) => {
     try {
-      const res = await axios.get(`http://localhost:8000/api/user/profile/${userid}`, {
+      const res = await axios.get(process.env.REACT_APP_API_URL + `/api/user/profile/${userid}`, {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -1083,7 +1109,7 @@ const ApiContextProvider = (props) => {
   const deleteProfile = async () => {
     try {
       await axios.delete(
-        `http://localhost:8000/api/user/profile/${profile.id}/`,
+        process.env.REACT_APP_API_URL + `/api/user/profile/${profile.id}/`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -1107,7 +1133,7 @@ const ApiContextProvider = (props) => {
     const editData = new FormData();
     console.log("editProfile", editedProfile.sex);
     editedProfile.nickName && editData.append("nickName", editedProfile.nickName);
-    editedProfile.birthday && editData.append("birth", parseInt(editedProfile.birthday));
+    editedProfile.birthday && editData.append("birth", editedProfile.birthday);
     editedProfile.sex && editData.append("sex", editedProfile.sex);
     editedProfile.caption && editData.append("caption", editedProfile.caption);
     cover.name && editData.append("img", cover, cover.name);
@@ -1120,11 +1146,11 @@ const ApiContextProvider = (props) => {
 
     try {
       const res = await axios.put(
-        `http://localhost:8000/api/user/profile/${profile.id}/`,
+        process.env.REACT_APP_API_URL + `/api/user/profile/${profile.id}/`,
         editData,
         {
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data",
             Authorization: `Token ${token}`,
           },
         }
@@ -1163,7 +1189,7 @@ const ApiContextProvider = (props) => {
 
     try {
       const res = await axios.put(
-        `http://localhost:8000/api/user/monopost/${postdata.id}/`,
+        process.env.REACT_APP_API_URL + `/api/user/monopost/${postdata.id}/`,
         editData,
         {
           headers: {
@@ -1186,7 +1212,7 @@ const ApiContextProvider = (props) => {
   const newRequestFriend = async (askData) => {
     try {
       const res = await axios.post(
-        `http://localhost:8000/api/user/approval/`,
+        process.env.REACT_APP_API_URL + `/api/user/approval/`,
         askData,
         {
           headers: {
@@ -1211,25 +1237,24 @@ const ApiContextProvider = (props) => {
     // const createData = new FormData();
     try {
       // const resintpage = interestData;
-      // console.log("newUserIntPage", pageId);
       setCurrentPageId(pageId);
-      // const respost = await axios.get("http://localhost:8000/api/user/monopost/", {
+      // const respost = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopost/", {
       //   headers: {
       //     Authorization: `Token ${token}`,
       //   },
       // })
-      // const respage = await axios.get("http://localhost:8000/api/user/monopage/", {
+      // const respage = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopage/", {
       //   headers: {
       //     Authorization: `Token ${token}`,
       //   },
       // })
-      // const resaf = await axios.get("http://localhost:8000/api/user/affiliatelinks/", {
+      // const resaf = await axios.get(process.env.REACT_APP_API_URL + "/api/user/affiliatelinks/", {
       //   headers: {
       //     Authorization: `Token ${token}`,
       //   },
       // })
       if (monopages.length == 0) {
-        const respage = await axios.get("http://localhost:8000/api/user/monopage/", {
+        const respage = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopage/", {
           headers: {
             Authorization: `Token ${token}`,
           },
@@ -1245,7 +1270,7 @@ const ApiContextProvider = (props) => {
 
       }
       if (monoposts.length == 0) {
-        const respost = await axios.get("http://localhost:8000/api/user/monopost/", {
+        const respost = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopost/", {
           headers: {
             Authorization: `Token ${token}`,
           },
@@ -1278,7 +1303,7 @@ const ApiContextProvider = (props) => {
   const newUserIntPost = async (interestData) => {
     try {
       const resintpost = await axios.post(
-        "http://localhost:8000/api/user/userintpost/",
+        process.env.REACT_APP_API_URL + "/api/user/userintpost/",
         interestData,
         {
           headers: {
@@ -1287,12 +1312,12 @@ const ApiContextProvider = (props) => {
           },
         }
       )
-      const rescomment = await axios.get("http://localhost:8000/api/user/monocomment/", {
+      const rescomment = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monocomment/", {
         headers: {
           Authorization: `Token ${token}`,
         },
       })
-      const respost = await axios.get("http://localhost:8000/api/user/monopost/", {
+      const respost = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopost/", {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -1312,14 +1337,36 @@ const ApiContextProvider = (props) => {
 
   const newUserIntUser = async (intUserId) => {
     try {
-      // console.log("newUserIntUser");
-      setIntuser(profiles.find((each) => {
-        return each.userProfile === Number(intUserId)
-      }));
-      setPostsforintuser(monoposts.filter((each) => {
-        return each.userPost === Number(intUserId)
-      }))
-    } catch {
+      if (profile.length == 0) {
+        const res = await axios.get(process.env.REACT_APP_API_URL + "/api/user/profile/", {
+          headers: {
+            Authorization: `Token ${token}`,
+          },
+        });
+        setIntuser(res.data.find((each) => {
+          return each.userProfile === Number(intUserId)
+        }));
+      }
+      else {
+        setIntuser(profiles.find((each) => {
+          return each.userProfile === Number(intUserId)
+        }));
+      }
+      if (monoposts.length == 0) {
+        const respost = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopost/", {
+          headers: {
+            Authorization: `Token ${token}`,
+          },
+        })
+        setPostsforintuser(respost.data.filter((each) => {
+          return each.userPost === Number(intUserId)
+        }))
+      } else {
+        setPostsforintuser(monoposts.filter((each) => {
+          return each.userPost === Number(intUserId)
+        }))
+      }
+    } catch (err) {
       console.log("error-newUserIntUser");
     }
   }
@@ -1328,7 +1375,7 @@ const ApiContextProvider = (props) => {
     try {
       // console.log(interestData);
       // const resintattribute = await axios.post(
-      //   "http://localhost:8000/api/user/userintattribute/",
+      //   process.env.REACT_APP_API_URL + "/api/user/userintattribute/",
       //   interestData,
       //   {
       //     headers: {
@@ -1337,12 +1384,12 @@ const ApiContextProvider = (props) => {
       //     },
       //   }
       // )
-      const respage = await axios.get("http://localhost:8000/api/user/monopage/", {
+      const respage = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopage/", {
         headers: {
           Authorization: `Token ${token}`,
         },
       });
-      // const resattribute = await axios.get("http://localhost:8000/api/user/pageattribute/", {
+      // const resattribute = await axios.get(process.env.REACT_APP_API_URL + "/api/user/pageattribute/", {
       //   headers: {
       //     Authorization: `Token ${token}`,
       //   },
@@ -1360,52 +1407,50 @@ const ApiContextProvider = (props) => {
     }
   }
 
-  const followPage = async () => {
-    // console.log(window.location.href);
-    const createData = new FormData();
+  const followPage = async (id) => {
+    // const createData = new FormData();
     // createData.append("pageId", id)
-    createData.append("pageUrl", pathname)
-    try {
-        const res = await axios.post(
-        "http://localhost:8000/api/user/followingpage/",
-        createData, 
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Token ${token}`,
-          },
-        }
-      )
-      getFollowingPage()
-    } catch {
-      console.log("error-followPage")
-    }
+    // try {
+    //   //   const res = await axios.post(
+    //   //   process.env.REACT_APP_API_URL + "/api/user/followingpage/",
+    //   //   createData, 
+    //   //   {
+    //   //     headers: {
+    //   //       "Content-Type": "application/json",
+    //   //       Authorization: `Token ${token}`,
+    //   //     },
+    //   //   }
+    //   // )
+    //   getFollowingPage()
+    // } catch {
+    //   console.log("error-followPage")
+    // }
   }
 
   const ownPage = async (id) => {
     const createData = new FormData();
-    createData.append("pageId", id)
-    try {
-      //   const res = await axios.post(
-      //   "http://localhost:8000/api/user/owningpage/",
-      //   createData, 
-      //   {
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //       Authorization: `Token ${token}`,
-      //     },
-      //   }
-      // )
+    createData.append("encrypted_pageId", id)
+    axios.post(
+      process.env.REACT_APP_API_URL + "/api/user/owningpage/",
+      createData, 
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`,
+        },
+      }
+    ).then(res => {
+      newUserIntPage(res.data.pageId);
       getOwningPage()
-    } catch {
-      console.log("error-ownPage")
-    }
+    }).catch ( err=>{
+      console.log("error-ownPage", err)
+    })
   }
 
   const changeApprovalRequest = async (uploadDataAsk, ask) => {
     try {
       const res = await axios.put(
-        `http://localhost:8000/api/user/approval/${ask.id}/`,
+        process.env.REACT_APP_API_URL + `/api/user/approval/${ask.id}/`,
         uploadDataAsk,
         {
           headers: {
@@ -1431,7 +1476,7 @@ const ApiContextProvider = (props) => {
 
       !resp[0]
         ? await axios.post(
-          `http://localhost:8000/api/user/approval/`,
+          process.env.REACT_APP_API_URL + `/api/user/approval/`,
           newDataAsk,
           {
             headers: {
@@ -1441,7 +1486,7 @@ const ApiContextProvider = (props) => {
           }
         )
         : await axios.put(
-          `http://localhost:8000/api/user/approval/${resp[0].id}/`,
+          process.env.REACT_APP_API_URL + `/api/user/approval/${resp[0].id}/`,
           newDataAskPut,
           {
             headers: {
@@ -1454,6 +1499,90 @@ const ApiContextProvider = (props) => {
       console.log("error-changeApprovalRequest");
     }
   };
+
+  const getAds = async () => {
+    try {
+      const res = await axios.get(
+        process.env.REACT_APP_API_URL + `/api/user/advertisement/`,
+        {
+          headers: {
+            Authorization: `Token ${token}`
+          }
+        }
+      )
+      const resdata = res.data.filter((item) => { return item.del_flag == 0 });
+      setAds(resdata);
+    } catch {
+      console.log("error-getAds");
+    }
+  }
+
+  const addAdsCnt = async (id) => {
+    try {
+      const res = await axios.post(
+        process.env.REACT_APP_API_URL + `/api/user/updateAds/`,
+        { updateCnt: 1, adsId: id },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Token ${token}`,
+          },
+        }
+      );
+      const selected = ads.filter((item) => item.id === id);
+      if (selected[0].cnt == selected[0].target - 1) {
+        console.log("delflag");
+        await axios.post(
+          process.env.REACT_APP_API_URL + `/api/user/updateAds/`,
+          { updateDelFlag: 1, adsId: id, updateCnt: 0 },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Token ${token}`,
+            },
+          }
+        );
+        const newAds = ads.filter((item) => item.id !== id);
+        setAds(newAds);
+      }
+      // setAds((prev) => {
+      //   const newAds = prev;
+      //   newAds.map((item) => {
+      //     if (item.id == id) item.cnt ++;
+      //     return item;
+      //   })
+      //   return newAds;
+      // })
+    } catch {
+      console.log("error-addAdsCnt");
+    }
+  }
+
+  const postAds = async (data) => {
+    try {
+      const res = await axios.post(
+        process.env.REACT_APP_API_URL + `/api/user/advertisement/`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Token ${token}`,
+          },
+        }
+      );
+      setAds((prev) => {
+        const newState = prev;
+        newState.push(res.data);
+        return newState;
+      })
+      // console.log(res.data);
+      // setProfile(res.data);
+      // getProfile();
+      newSnack("success", "広告キャンペーンが登録されました。");
+    } catch {
+      console.log("error-postAds");
+    }
+  }
 
   return (
     <ApiContext.Provider
@@ -1529,6 +1658,7 @@ const ApiContextProvider = (props) => {
         getProfile,
         getMonoComments,
         getMonoPages,
+        getPagesForIntAttribute,
         getMonoPosts,
         getFriendRequest,
         followinguserpost,
@@ -1541,6 +1671,11 @@ const ApiContextProvider = (props) => {
         pageattribute,
         pagesforintattribute,
         ownPage,
+        postAds,
+        getAds,
+        ads,
+        setAds,
+        addAdsCnt
       }}
     >
       {props.children}

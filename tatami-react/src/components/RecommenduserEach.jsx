@@ -59,7 +59,7 @@ const RecommenduserEach = ({ profileeach }) => {
       // getUserInterest();
       // getUserInterest();
       // getUserInterest();
-      history.push(`/specificuserpage/${profileeach.userProfile}`);
+      history.push(`/user/${profileeach.userProfile}`);
     }
   };
 
@@ -125,7 +125,7 @@ const RecommenduserEach = ({ profileeach }) => {
           ) : (
             <figure className="overflow-hidden avatar ms-auto me-auto mb-0 position-relative w65 z-index-1">
               <img
-                src="http://localhost:8000/media/avatars/default.jpg"
+                src=process.env.REACT_APP_API_URL + "/media/avatars/default.jpg"
                 alt="avater"
                 className="float-right p-0 bg-white rounded-circle w-100 shadow-xss"
               />

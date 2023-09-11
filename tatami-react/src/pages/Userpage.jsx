@@ -12,27 +12,44 @@ import Postview from "./Postview";
 import Lightbox from "react-image-lightbox";
 import { useCookies } from "react-cookie";
 import LoginComponent from "../components/LoginComponent";
+import SpecificUserpageAds from "../components/SpecificUserPageAds";
+import AdvertisementView from "../components/AdvertisementView";
 import ProfileRecommender from "../components/ProfileRecommender";
 
 const Userpage = () => {
-  const { profile, monoposts, profiles } = useContext(ApiContext);
+  const { profile, monoposts, profiles, ads } = useContext(ApiContext);
   const [cookies] = useCookies(["current-token"]);
   const posts = monoposts.filter((item) => {
     return item.userPost === profile.userProfile;
   });
 
-  const listMonoPosts = posts.map((post) => (
-    <Postview
-      key={post.id}
-      postData={post}
-      profileData={profiles.find((item) => {
-        return item.userProfile === post.userPost;
-      })}
-      reposting={post.reposting}
-      repostingProfileData={profiles.find((item) => {
-        return item.userProfile === post.repostingFromUser;
-      })}
-    />
+  const getSpecificProfile = (id) => {
+    if (profiles.length == 0) return;
+    return profiles.filter((item) => { return item.userProfile === id })[0];
+  }
+
+  const listMonoPosts = posts.map((post, index) => (
+    <>
+      <Postview
+        key={post.id}
+        postData={post}
+        profileData={profiles.find((item) => {
+          return item.userProfile === post.userPost;
+        })}
+        reposting={post.reposting}
+        repostingProfileData={profiles.find((item) => {
+          return item.userProfile === post.repostingFromUser;
+        })}
+      />
+      {
+        index % 5 == 4 && parseInt(index / 5) < ads.length ?
+          <AdvertisementView
+            profile={getSpecificProfile(ads[parseInt(index / 5)].userId)}
+            item={ads[parseInt(index / 5)]}
+          /> :
+          <></>
+      }
+    </>
   ));
   const [isOpenModal, setIsOpenModal] = useState(false);
 
@@ -182,6 +199,7 @@ const Userpage = () => {
               <div className="col-xl-4 col-xxl-3 col-lg-4 pe-3">
                 <Profiledetail />
                 <UserpagePicture />
+                <SpecificUserpageAds userId={profile.userProfile} />
               </div>
               <div className="col-xl-8 col-xxl-9 col-lg-8">
                 {!cookies["current-token"] ? (

@@ -8,36 +8,53 @@ import { ApiContext } from "../context/ApiContext";
 // import Profiledetail from '../components/Profiledetail';
 import SpecificUserpagePicture from "../components/SpecificUserpagePicture";
 import SpecificUserpageEach from "../components/SpecificUserpageEach";
+import SpecificUserpageAds from "../components/SpecificUserPageAds";
 import Postview from "./Postview";
 import SpecificUserProfiledetail from "../components/SpecificUserProfileDetail";
+import AdvertisementView from "../components/AdvertisementView";
 import { useCookies } from "react-cookie";
 import LoginComponent from "../components/LoginComponent";
 
 const SpecificUserpage = () => {
-  const { profile, postsforintuser, profiles, newUserIntUser } = useContext(ApiContext);
+  const { profile, postsforintuser, profiles, newUserIntUser, ads, getProfile } = useContext(ApiContext);
   const posts = postsforintuser;
 
   const { userid } = useParams();
 
-  useEffect(() => {
+  useEffect(async () => {
     newUserIntUser(userid);
-    window.scrollTo({left: 0, top: 0});
+    window.scrollTo({ left: 0, top: 0 });
   }, [userid]);
 
   const [cookies] = useCookies(["current-token"]);
 
-  const listMonoPosts = posts.map((post) => (
-    <Postview
-      key={post.id}
-      postData={post}
-      profileData={profiles.find((item) => {
-        return item.userProfile === post.userPost;
-      })}
-      reposting={post.reposting}
-      repostingProfileData={profiles.find((item) => {
-        return item.userProfile === post.repostingFromUser;
-      })}
-    />
+  const getSpecificProfile = (id) => {
+    if (profiles.length == 0) return;
+    return profiles.filter((item) => { return item.userProfile === id })[0];
+  }
+
+  const listMonoPosts = posts.map((post, index) => (
+    <>
+      <Postview
+        key={post.id}
+        postData={post}
+        profileData={profiles.find((item) => {
+          return item.userProfile === post.userPost;
+        })}
+        reposting={post.reposting}
+        repostingProfileData={profiles.find((item) => {
+          return item.userProfile === post.repostingFromUser;
+        })}
+      />
+      {
+        index % 5 == 4 && parseInt(index / 5) < ads.length ?
+          <AdvertisementView
+            profile={getSpecificProfile(ads[parseInt(index / 5)].userId)}
+            item={ads[parseInt(index / 5)]}
+          /> :
+          <></>
+      }
+    </>
   ));
 
   return (
@@ -55,6 +72,7 @@ const SpecificUserpage = () => {
               <div className="col-xl-4 col-xxl-3 col-lg-4 pe-0">
                 <SpecificUserProfiledetail />
                 <SpecificUserpagePicture />
+                <SpecificUserpageAds userId={userid} />
               </div>
               <div className="col-xl-8 col-xxl-9 col-lg-8">
                 {!cookies["current-token"] ? (

@@ -32,7 +32,7 @@ const PictureEach = ({ ask, prof }) => {
       // getUserInterest();
       // getUserInterest();
       // getUserInterest();
-      history.push(`/specificuserpage/${profileeach.userProfile}`);
+      history.push(`/user/${profileeach.userProfile}`);
     }
   };
 

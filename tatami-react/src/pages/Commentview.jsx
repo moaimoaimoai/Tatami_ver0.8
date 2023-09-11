@@ -20,7 +20,7 @@ const Commentview = ({commentData, profileData}) =>  {
           // getUserInterest();
           // getUserInterest();
           // getUserInterest();
-          history.push(`/specificuserpage/${profileData.userProfile}`);
+          history.push(`/user/${profileData.userProfile}`);
         }
       };
 

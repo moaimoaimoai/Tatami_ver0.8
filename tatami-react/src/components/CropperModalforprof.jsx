@@ -132,9 +132,6 @@ const CropperModalforprof: React.FC<Props> = ({
           />
         </div>
         <div className="buttons">
-          <Button className="close" onClick={onClose}>
-            Close
-          </Button>
           <Button
             className="ok"
             onClick={() => {
@@ -143,6 +140,9 @@ const CropperModalforprof: React.FC<Props> = ({
             }}
           >
             OK
+          </Button>
+          <Button className="close" onClick={onClose}>
+            Close
           </Button>
         </div>
       </div>

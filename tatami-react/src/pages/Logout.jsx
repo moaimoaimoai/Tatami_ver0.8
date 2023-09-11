@@ -21,7 +21,7 @@ const Logout = () => {
   const [cookies, setCookie, removeCookie] = useCookies(["current-token"]);
   const Logout = () => {
     removeCookie("current-token");
-    window.location.replace("/home");
+    window.location.replace("/login");
   };
 
   return (

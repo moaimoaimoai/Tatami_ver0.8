@@ -4,8 +4,11 @@ import { useState } from "react";
 import { useContext } from "react";
 import { ApiContext } from "../context/ApiContext";
 import { makeStyles } from "@material-ui/core/styles";
+import { useCookies } from "react-cookie";
 
 import Darkbutton from "./Darkbutton";
+import { SnackbarContext } from "../context/SnackbarContext";
+import AdsModal from './AdsModal';
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -22,14 +25,46 @@ const useStyles = makeStyles((theme) => {
 const Header = () => {
   // const [isOpen, setIsOpen] = useState(false)
   const [isNoti, setIsNoti] = useState(false);
+  const [isShowAdsModal, setShowAdsModal] = useState(false);
+  const [cookies, setCookie, removeCookie] = useCookies(["current-token"]);
+
   const toggleisNoti = () => setIsNoti(!isNoti);
 
   const classes = useStyles();
 
   const { profile } = useContext(ApiContext);
+  const { newSnack } = useContext(SnackbarContext);
+
+  const handleLogin = () => {
+    if (!profile.userProfile) {
+      window.location.replace("/login");
+      return;
+    }
+  }
+
+  const handleAdsClick = () => {
+    if (!profile.userProfile) {
+      newSnack("error", "ログインしてください。");
+      return;
+    }
+    setShowAdsModal(true);
+  }
+
+  const Logout = () => {
+    removeCookie("current-token");
+    window.location.replace("/login");
+  };
+
+  const handleModalClose = () => {
+    setShowAdsModal(false);
+  }
 
   return (
     <div className="nav-header bg-white shadow-xs border-0">
+      <AdsModal
+        isVisible={isShowAdsModal}
+        handleClose={handleModalClose}
+      />
       <div className="nav-top">
         <Link to="/home">
           <i className="feather-zap text-success display2-size me-3 ms-0"></i>
@@ -132,6 +167,31 @@ const Header = () => {
       )}
       {/* <NavLink activeClassName="active" to="/home" className="p-2 text-center ms-3 menu-icon center-menu-icon"><i className="feather-home font-lg bg-greylight btn-round-lg theme-dark-bg text-grey-500 "></i></NavLink>
             <NavLink activeClassName="active" to="/request" className="p-2 text-center ms-0 menu-icon center-menu-icon"><i className="feather-bell font-lg bg-greylight btn-round-lg theme-dark-bg text-grey-500 "></i></NavLink> */}
+      {
+        !profile.id ?
+          <Link to='/login'>
+            <button
+              className="mt-0 btn pt-2 pb-2 ps-3 pe-3 lh-24 ms-1 ls-3 d-inline-block rounded-xl btn-outline-success font-xsssss fw-700 ls-lg"
+              onClick={handleLogin}
+            >
+              ログイン
+            </button>
+          </Link>
+          :
+          <button
+            className="mt-0 btn pt-2 pb-2 ps-3 pe-3 lh-24 ms-1 ls-3 d-inline-block rounded-xl btn-outline-success font-xsssss fw-700 ls-lg"
+            onClick={() => Logout()}
+          >
+            ログアウト
+          </button>
+      }
+
+      <button
+        className="mt-0 btn pt-2 pb-2 ps-3 pe-3 lh-24 ms-1 ls-3 d-inline-block rounded-xl btn-outline-success font-xsssss fw-700 ls-lg"
+        onClick={handleAdsClick}
+      >
+        広告キャンペーンを開始
+      </button>
       <Darkbutton />
       {profile.img ? (
         <div className={classes.avatarContainer}>

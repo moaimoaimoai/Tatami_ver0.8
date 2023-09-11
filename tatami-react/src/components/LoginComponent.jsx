@@ -1,5 +1,6 @@
 import React, { useReducer, useState, useEffect, useContext } from "react";
-// import { useGoogleLogin } from '@react-oauth/google';
+import { useHistory } from "react-router-dom";
+import { useGoogleLogin } from '@react-oauth/google';
 import { withCookies } from "react-cookie";
 import axios from "axios";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -21,6 +22,7 @@ const initialState = {
     credentialsLog: {
         username: "",
         password: "",
+        confirmPassword: "",
     },
     credentialsReg: {
         email: "",
@@ -81,8 +83,11 @@ const loginReducer = (state, action) => {
 };
 
 const LoginComponent = (props) => {
+    const history = useHistory();
     const [state, dispatch] = useReducer(loginReducer, initialState);
     const [user, setUser] = useState(null);
+    const [isAgree, setAgree] = useState(false);    
+
     const { setToken } = useContext(ApiContext);
     const [gProfile, setGProfile] = useState(null);
     const { newSnack } = useContext(SnackbarContext);
@@ -100,14 +105,18 @@ const LoginComponent = (props) => {
             payload: event.target.value,
         });
     };
-    const gLogin = () => { }
-    // useGoogleLogin({
-    //     onSuccess: (codeResponse) => {
-    //         dispatch({ type: START_FETCH });
-    //         setUser(codeResponse);
-    //     },
-    //     onError: (error) => console.log('Login Failed:', error)
-    // });
+
+    const changeAgree = () => (e) => {
+        setAgree(e.target.checked);
+      };
+
+    const gLogin = useGoogleLogin({
+        onSuccess: (codeResponse) => {
+            dispatch({ type: START_FETCH });
+            setUser(codeResponse);
+        },
+        onError: (error) => console.log('Login Failed:', error)
+    });
     useEffect(() => {
         if (user) {
             axios
@@ -171,19 +180,25 @@ const LoginComponent = (props) => {
                 );
                 props.cookies.set("current-token", res.data.token);
                 dispatch({ type: FETCH_SUCCESS });
-                newSnack("success", "LoginSuccess");
+                newSnack("success", "ログインに成功しました。");
                 // (res.data.token
                 //     ?
                 //     (window.location.href = "/home")
 
                 //     : (window.location.href = "/login"));
                 setToken(res.data.token);
-            } catch {
-                newSnack("error", "LoginFailed");
+            } catch (err) {
+                const errData = err.response.data;
+                if (errData.username)
+                    newSnack("error", errData.username);
+                else if (errData.password)
+                    newSnack("error", errData.password);
+                else
+                    newSnack("error", "ログインに失敗しました。");
                 dispatch({ type: ERROR_CATCHED });
             }
         } else {
-            try {
+            if (isAgree) {
                 dispatch({ type: START_FETCH });
                 await axios.post(
                     process.env.REACT_APP_API_URL + "/api/user/register/",
@@ -191,13 +206,18 @@ const LoginComponent = (props) => {
                     {
                         headers: { "Content-Type": "application/json" },
                     }
-                );
-                dispatch({ type: FETCH_SUCCESS });
-                newSnack("success", "RegisterSuccess");
-                dispatch({ type: TOGGLE_MODE });
-            } catch {
-                newSnack("error", "RegisterFailed");
-                dispatch({ type: ERROR_CATCHED });
+                ).then(function () {              
+                    dispatch({ type: FETCH_SUCCESS });
+                    // dispatch({ type: TOGGLE_MODE });
+                    newSnack("success", "登録に成功しました。");
+				    history.push('/please-verify');
+                }).catch(function (e) {
+                    const pairs = Object.entries(e.response.data);
+                    dispatch({ type: ERROR_CATCHED, inputName: 'error', payload: pairs[0][0]+':'+pairs[0][1], });
+                    newSnack("error", "登録に失敗しました。");
+                });
+            } else {
+                dispatch({ type: ERROR_CATCHED, inputName: 'error', payload: '規約に同意する必要があります。' });
             }
         }
     };
@@ -235,14 +255,14 @@ const LoginComponent = (props) => {
                             <input onChange={inputChangedReg()} name="email" type="text" value={state.credentialsReg.email} className="style2-input ps-5 form-control text-grey-900 font-xsss fw-600" placeholder="Email" />
                         </div>
                         <div className="form-group icon-input mb-3">
-                            <input type="password" className="style2-input ps-5 form-control text-grey-900 font-xss ls-3" placeholder="パスワード" />
+                            <input type="password" onChange={inputChangedReg()} value={state.credentialsReg.password} name="password" className="style2-input ps-5 form-control text-grey-900 font-xss ls-3" placeholder="パスワード" />
                             <i className="font-sm ti-lock text-grey-500 pe-0"></i>
                         </div>
                         <div className="form-group icon-input mb-1">
-                            <input type="password" onChange={inputChangedReg()} value={state.credentialsReg.password} name="password" className="style2-input ps-5 form-control text-grey-900 font-xss ls-3" placeholder="パスワード（確認）" />
+                            <input type="password" onChange={inputChangedReg()} value={state.credentialsReg.confirmPassword} name="confirmPassword" className="style2-input ps-5 form-control text-grey-900 font-xss ls-3" placeholder="パスワード（確認）" />
                             <i className="font-sm ti-lock text-grey-500 pe-0"></i>
                         </div><div className="form-check text-left mb-3">
-                            <input type="checkbox" className="form-check-input mt-2" id="exampleCheck2" />
+                            <input type="checkbox" className="form-check-input mt-2" id="exampleCheck2" onChange={changeAgree()} />
                             <label className="form-check-label font-xsss text-white">規約に同意する</label>
                         </div>
                         <div className="col-sm-12 p-0 text-left">

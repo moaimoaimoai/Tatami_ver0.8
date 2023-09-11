@@ -10,7 +10,7 @@ const SpecificUserProfiledetail = () => {
       <div className="card-body d-block p-4">
         <h4 className="fw-700 mb-3 font-xsss text-grey-900">About</h4>
         <p className="fw-500 text-grey-500 lh-24 font-xssss mb-0">
-          {intuser.caption}
+          {intuser && intuser.caption}
         </p>
       </div>
     </div>
