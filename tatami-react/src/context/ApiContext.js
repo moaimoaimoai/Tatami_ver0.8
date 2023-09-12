@@ -1300,6 +1300,61 @@ const ApiContextProvider = (props) => {
     }
   }
 
+  const newUserIntPageWithScroll = async (pageId, count) => {
+    try {
+      setCurrentPageId(pageId);
+      if (monopages.length == 0) {
+        const respage = await axios.get("http://localhost:8000/api/user/monopage/", {
+          headers: {
+            Authorization: `Token ${token}`,
+          },
+        })
+        setIntpage(respage.data.find((each) => {
+          return each.id === Number(pageId)
+        }));
+      } else {
+        setIntpage(monopages.find((each) => {
+          return each.id === Number(pageId)
+        }));
+
+      }
+
+      // if (monoposts.length == 0) {
+        const respost = await axios.get("http://localhost:8000/api/user/monopostcc/?pageId="+pageId+"&count="+count, {
+          headers: {
+            Authorization: `Token ${token}`,
+          },
+        })
+        return respost.data;
+        // setPostsforintpagebyscroll(respost.data.res)
+        // setPostsforintpage(respost.data.filter((each) => {
+        //   return each.reviewTo === Number(pageId)
+        // }))
+        // console.log("monoposts", monoposts);
+      // } else {
+      //   setPostsforintpage(monoposts.filter((each) => {
+      //     return each.reviewTo === Number(pageId)
+      //   }))
+
+      // }
+    } catch {
+      console.log("error-newUserIntPage");
+    }
+  }
+
+  const profilesWithScroll = async (count) => {
+    try {
+      const respost = await axios.get("http://localhost:8000/api/user/profilecc/?&count="+count, {
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      })
+      return respost.data;
+    } catch {
+      console.log("error-newUserIntPage");
+    }
+  }
+
   const newUserIntPost = async (interestData) => {
     try {
       const resintpost = await axios.post(
@@ -1651,6 +1706,8 @@ const ApiContextProvider = (props) => {
         deleteMonopost,
         getSpecificProfile,
         newUserIntPage,
+        newUserIntPageWithScroll,
+        profilesWithScroll,
         newUserIntPost,
         newUserIntUser,
         getUserInterest,

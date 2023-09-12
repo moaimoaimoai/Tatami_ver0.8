@@ -47,6 +47,11 @@ const Mono = () => {
   const classes = useStyles();
   const { newSnack } = useContext(SnackbarContext);
   const [isOpen, setOpen] = useState(false);
+  const [count, setCount] = useState(0);
+  const [postsforintpagebyscroll, setPostsforintpagebyscroll] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
+  const [averageRate, setAverageRate] = useState(0);
 
   const { pageid } = useParams();
 
@@ -84,15 +89,19 @@ const Mono = () => {
     owningpage,
     getUserInterest,
     newUserIntPage,
+    newUserIntPageWithScroll,
     ads,
     getAds
   } = useContext(ApiContext);
 
   useEffect(() => {
-    newUserIntPage(pageid);
     getAds();
-    window.scrollTo({ left: 0, top: 0 });
   }, [pageid])
+
+  useEffect(() => {
+    console.log('pageId:'+count);
+    fetchData();
+  }, [count])
 
   const [cookies] = useCookies(["current-token"]);
 
@@ -100,6 +109,17 @@ const Mono = () => {
     if (profiles.length == 0) return;
     return profiles.filter((item) => { return item.userProfile === id })[0];
   }
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    const result = await newUserIntPageWithScroll(pageid, count);
+    console.log(result);
+    setPostsforintpagebyscroll(prevItems => [...prevItems, ...result.res]);
+    setAverageRate(Math.round(result.aggregate.rating__sum / result.totalCount));
+    setTotalCount(result.totalCount);
+    setIsLoading(false);
+  } 
+
 
   const sharePage = () => {
     copy(window.location.href);
@@ -134,24 +154,20 @@ const Mono = () => {
       )
     });
 
-  const [num, setNum] = useState(1);
-  const [display, setDisplay] = useState(null);
-
-  const slice = (arr, size) =>
-    arr.flatMap((_, i, a) => (i % size ? [] : [a.slice(i, i + size)]));
-
-  const slicedpostlist = slice(listMonoPosts, 3);
-
-  const getMorePosts = () => {
-    const next = num + 1;
-    setNum(next);
-    const slicedpostlistdisplay = slicedpostlist.slice(0, num + 1);
-    const _display = slicedpostlistdisplay.map((posts) => <>{posts}</>);
-    if (listMonoPosts.length > num * 3) {
-      setDisplay(_display);
-      newSnack('success', 'More Views has displayed!!!')
+  // Fetch more data when user scrolls to the bottom
+  const handleScroll = () => {
+    if (
+      window.innerHeight + document.documentElement.scrollTop + 5 >=
+      document.documentElement.offsetHeight && !isLoading
+    ) {
+      setCount((prev) => prev + 1);
     }
   };
+
+  // Attach scroll event listener
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+  }, []);
 
   const toGetPage = () => {
     // const createdIntData = new FormData();
@@ -293,7 +309,7 @@ const Mono = () => {
                         {rate ? (
                           <div className="col-12 text-center">
                             <h2 className="display2-size lh-1 m-0 text-grey-900 fw-700">
-                              {rate}%
+                              {averageRate}%
                             </h2>
                           </div>
                         ) : (
@@ -305,7 +321,7 @@ const Mono = () => {
                         )}
                         <div className="col-12 text-center">
                           <h4 className="font-xssss text-grey-600 fw-600 mt-2">
-                            {postsforintpage.length}件のPost
+                            {totalCount}件のPost
                           </h4>
                         </div>
                       </div>
@@ -388,19 +404,32 @@ const Mono = () => {
                 />
                 <br />
 
-                {num === 1 ? slicedpostlist[0] : display}
-                <div className="card-body p-0 mb-3">
-                  <div className="text-center">
-                    <Button
-                      className=" fw-700 text-white font-xssss text-center bg-current "
-                      onClick={() => getMorePosts()}
-                      size="sm"
-                      variant="solid"
-                    >
-                      さらに読み込み
-                    </Button>
-                  </div>
-                </div>
+                {
+                  profiles &&
+                  postsforintpagebyscroll.map((post, index) => (
+                    <>
+                      <Postview
+                        key={index}
+                        postData={post}
+                        profileData={profiles.find((item) => {
+                          return item.userProfile === Number(post.userPost);
+                        })}
+                        reposting={post.reposting}
+                        repostingProfileData={profiles.find((item) => {
+                          return item.userProfile === post.repostingFromUser;
+                        })}
+                      />
+                      {
+                        index % 3 == 2 && parseInt(index / 3) < ads.length ?
+                          <AdvertisementView
+                            profile={getSpecificProfile(ads[parseInt(index / 3)].userId)}
+                            item={ads[parseInt(index / 3)]}
+                          /> :
+                          <></>
+                      }
+                    </>
+                  ))
+                }
                 <div className="card-body p-0 mb-3">
                   <div className="card w-100 shadow-xss rounded-xxl border-0 p-4 mb-3">
                     <div

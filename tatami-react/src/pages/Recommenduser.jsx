@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import Header from "../components/Header";
 import Leftnav from "../components/Leftnav";
 import Appfooter from "../components/Appfooter";
@@ -10,10 +10,14 @@ import LoginComponent from "../components/LoginComponent";
 import ProfileRecommender from "../components/ProfileRecommender";
 
 const Recommenduser = () => {
-  const { profiles, profile } = useContext(ApiContext);
+  const { profiles, profile, profilesWithScroll } = useContext(ApiContext);
 
   const [inputValue, setInputValue] = useState();
   const [showprofiles, setShowprofiles] = useState();
+  const [profilesbyscroll, setProfilesbyscroll] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [count, setCount] = useState(0);
+  // const [profilesbyscroll, setProfilesbyscroll] = useState([]);
 
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
@@ -43,8 +47,8 @@ const Recommenduser = () => {
 
   const defaultProfiles =
     profile.id &&
-    profiles &&
-    profiles.map((profile, index) => (
+    profilesbyscroll &&
+    profilesbyscroll.map((profile, index) => (
       <RecommenduserEach key={index} profileeach={profile} />
     ));
 
@@ -54,6 +58,34 @@ const Recommenduser = () => {
     showprofiles.map((profile) => (
       <RecommenduserEach key={profile.nickName} profileeach={profile} />
     ));
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    const result = await profilesWithScroll(count);
+    console.log(result);
+    setProfilesbyscroll(prevItems => [...prevItems, ...result]);
+    setIsLoading(false);
+  }
+
+  useEffect(() => {
+    console.log('pageId:'+count);
+    fetchData();
+  }, [count])  
+
+  // Fetch more data when user scrolls to the bottom
+  const handleScroll = () => {
+    if (
+      window.innerHeight + document.documentElement.scrollTop + 5 >=
+      document.documentElement.offsetHeight && !isLoading
+    ) {
+      setCount((prev) => prev + 1);
+    }
+  };
+
+  // Attach scroll event listener
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+  }, []); 
 
   return (
     <Fragment>

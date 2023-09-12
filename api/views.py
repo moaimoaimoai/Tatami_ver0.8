@@ -4,7 +4,7 @@ from rest_framework.permissions import AllowAny
 from . import serializers
 from .models import Advertisement, User, Profile, MonoPage, MonoPost, MonoComment, FriendRequest, UserIntPage, UserIntPost, UserIntComment, UserIntUser, UserIntAttribute, PageAttribute, FollowingPage, AffiliateLinks, UserRecommendedPage, UserRecommendedUser, OwningPage
 from django.shortcuts import render
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.db import connection
 from rest_framework.exceptions import ValidationError
 from rest_framework import status
@@ -198,6 +198,20 @@ class ProfileViewSet(viewsets.ModelViewSet):
         serializer.save(userProfile=self.request.user)
 
 
+class ProfileViewSetCC(viewsets.ModelViewSet):
+    queryset = Profile.objects.all().order_by("-created_on")
+    serializer_class = serializers.ProfileSerializer
+
+    def list(self, request):
+        limit = 12
+        count = request.query_params.get("count")
+        offset = limit * int(count)
+        data = Profile.objects.all()[offset:offset+limit]
+        # data = {"res": res, "total_count": totalcount}
+        serializer = self.serializer_class(data, many=True)
+        return Response(serializer.data)
+
+
 class MyProfileListView(generics.ListAPIView):
     queryset = Profile.objects.all().order_by("-created_on")
     serializer_class = serializers.ProfileSerializer
@@ -246,6 +260,22 @@ class MonoPostViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         authenticate(self.request)
         serializer.save(userPost=self.request.user)
+
+class MonoPostViewSetCC(viewsets.ModelViewSet):
+    queryset = MonoPost.objects.all().order_by("-created_on")
+    serializer_class = serializers.MonoPostSerializer
+
+    def list(self, request):
+        limit = 10
+        pageID = request.query_params.get("pageId")
+        count = request.query_params.get("count")
+        queryset = MonoPost.objects.filter(reviewTo=pageID)
+        totalcount = queryset.count()
+        sumrate = queryset.aggregate(Sum('rating'))
+        offset = limit * int(count)
+        data = queryset[offset:offset+limit]
+        serializer = self.serializer_class(data, many=True)
+        return Response({"res": serializer.data, "totalCount": totalcount, "aggregate":sumrate})
 
 class DeletePostViewSet(viewsets.ModelViewSet):
     queryset = MonoPost.objects.all().order_by("-created_on")
