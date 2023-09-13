@@ -18,9 +18,8 @@ const Verify = (props) => {
                             <div className="card-body rounded-0 text-center">
                                 <div className="col-sm-12 p-0 text-center">
                                     <Mail style={{ fontSize: '10rem', color: '#4cd964' }} />
-                                    <h2 className="display-1 font-lg fw-500 mt-0 mb-0 lh-32">続行するにはメールアドレスを確認してください</h2>
-                                    <p className="text-grey-600">{props.cookies.get('registered-email')}というアドレスにメールを送信しました<br>
-                                    </br>メールを確認し、提供されたリンクをクリックしてアドレスを確認してください。
+                                    <h2 className="display-1 font-lg fw-500 mt-0 mb-0 lh-32">続行するにはメールボックスをご確認してください。</h2>
+                                    <p className="text-grey-600">{props.cookies.get('registered-email')}にメールを送信しました。メールを確認し、提供されたリンクをクリックしてください。
                                     </p>
                                 </div>
                             </div>

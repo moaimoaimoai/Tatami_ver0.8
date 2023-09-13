@@ -84,11 +84,11 @@ class ForgotPasswordView(generics.CreateAPIView):
             # TODO:  Update with your own body
             'body': encrypted_key,
             # TODO: Update the signature
-            'sign': 'The Tatami account team',
+            'sign': 'Tatami',
         })
         send_mail(
-            'Reset your password',
-            'You are lucky to receive this mail.',
+            'パスワードのリセット',
+            'このメールをご覧いただきありがとうございます。',
             'noreply@tatami.com',  # TODO: Update this with your mail id
             [email],  # TODO: Update this with the recipients mail id
             html_message=html_message,
@@ -108,7 +108,7 @@ class PasswordVerifyView(generics.CreateAPIView):
         try:
             user = get_user_model().objects.get(id=user_id, verification_key=verification_key)
         except get_user_model().DoesNotExist:
-           return Response('Invalid user ID or verification key.', status=status.HTTP_400_BAD_REQUEST)
+           return Response('ユーザーIDまたは検証キーが無効です。', status=status.HTTP_400_BAD_REQUEST)
         return JsonResponse({'email': user.email})
 
 class ResetPasswordView(generics.CreateAPIView):
@@ -138,7 +138,7 @@ class EmailVerifyView(generics.CreateAPIView):
         try:
             user = get_user_model().objects.get(id=user_id, verification_key=verification_key)
         except get_user_model().DoesNotExist:
-            raise serializers.ValidationError('Invalid user ID or verification key.')
+            raise serializers.ValidationError('ユーザーIDまたは検証キーが無効です。')
         user.is_active = True
         user.save()
         return JsonResponse({'message': 'OK'})

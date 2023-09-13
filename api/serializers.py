@@ -28,12 +28,12 @@ class UserSerializer(serializers.ModelSerializer):
                 # TODO:  Update with your own body
                 'body': encrypted_key,
                 # TODO: Update the signature
-                'sign': 'The Tatami account team',
+                'sign': 'Tatami',
             }
         )
         send_mail(
-            'Verify your email address',
-            'You are lucky to receive this mail.',
+            '新規登録のお知らせ',
+            'このメールをご覧いただきありがとうございます。',
             'noreply@tatami.com',  # TODO: Update this with your mail id
             [user],  # TODO: Update this with the recipients mail id
             html_message=html_message,
