@@ -1304,7 +1304,7 @@ const ApiContextProvider = (props) => {
     try {
       setCurrentPageId(pageId);
       if (monopages.length == 0) {
-        const respage = await axios.get("http://localhost:8000/api/user/monopage/", {
+        const respage = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopage/", {
           headers: {
             Authorization: `Token ${token}`,
           },
@@ -1320,7 +1320,7 @@ const ApiContextProvider = (props) => {
       }
 
       // if (monoposts.length == 0) {
-        const respost = await axios.get("http://localhost:8000/api/user/monopostcc/?pageId="+pageId+"&count="+count, {
+        const respost = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopostcc/?pageId="+pageId+"&count="+count, {
           headers: {
             Authorization: `Token ${token}`,
           },
@@ -1344,7 +1344,7 @@ const ApiContextProvider = (props) => {
 
   const profilesWithScroll = async (count) => {
     try {
-      const respost = await axios.get("http://localhost:8000/api/user/profilecc/?&count="+count, {
+      const respost = await axios.get(process.env.REACT_APP_API_URL + "/api/user/profilecc/?&count="+count, {
         headers: {
           Authorization: `Token ${token}`,
         },
