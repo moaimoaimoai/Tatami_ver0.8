@@ -14,12 +14,7 @@ const OwningEach = (pageData, isfollow) => {
     
 
     const toOwnPage = () => {
-        const createdIntData = new FormData()
-        createdIntData.append("intPageId",page.pageData.id)
-        newUserIntPage(createdIntData)
-        getUserInterest()
-        getUserInterest()
-        getUserInterest()
+        newUserIntPage(page.pageData.id)
         getUserInterest()
         history.push("/owningpage")
     }
@@ -29,7 +24,7 @@ const OwningEach = (pageData, isfollow) => {
         <div className="card w-100 p-0 hover-card shadow-xss border-0 rounded-3 overflow-hidden me-2 ms-2 mb-3" onClick={() => toOwnPage()}>
             {/* {value.feature ? <span className="font-xsssss fw-700 ps-3 pe-3 lh-32 text-uppercase rounded-3 ls-2 bg-primary-gradiant d-inline-block text-white position-absolute mt-3 ms-3 z-index-1">Featured</span> : ''} */}
             <div className="card-image w-100 mb-3">
-                <a  href="#none" className="position-relative d-block"><img src={page.pageData.img} alt="hotel" className="w-100" /></a>
+                <span className="position-relative d-block pointer"><img src={page.pageData.img} alt="hotel" className="w-100" /></span>
             </div>
             <div className="card-body pt-0">
                 {/* <i className="feather-bookmark font-md text-grey-500 position-absolute right-0 me-3"></i> */}
@@ -54,7 +49,7 @@ const OwningEach = (pageData, isfollow) => {
                 <span className="font-xsss fw-700 mt-0 pe-5 ls-2 lh-32 d-inline-block text-success float-left"><span className="font-xssss"></span>
                  {/* {page.pageData.summary.slice(0,10)}.. */}
                  </span>
-                <Link to="/mono" className="position-absolute bottom-15 mb-5 ms-2 right-15"><i className="btn-round-sm bg-primary-gradiant text-white font-sm feather-chevron-right"></i></Link>
+                <Link to={`/mono/${page.pageData.id}`} className="position-absolute bottom-15 mb-5 ms-2 right-15"><i className="btn-round-sm bg-primary-gradiant text-white font-sm feather-chevron-right"></i></Link>
             </div>
         </div>
         </div>

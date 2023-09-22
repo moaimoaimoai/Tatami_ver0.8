@@ -1565,7 +1565,7 @@ const ApiContextProvider = (props) => {
           }
         }
       )
-      const resdata = res.data.filter((item) => { return item.del_flag == 0 });
+      const resdata = res.data.filter((item) => { return item.del_flag == 0 && item.allowed });
       setAds(resdata);
     } catch {
       console.log("error-getAds");
@@ -1612,7 +1612,27 @@ const ApiContextProvider = (props) => {
       console.log("error-addAdsCnt");
     }
   }
-
+  const allowAds = async (id) => {
+    axios.post(
+      process.env.REACT_APP_API_URL + `/api/user/allowAds/`,
+      {adsId: id },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`,
+        },
+      }
+    ).then(res => {
+      newSnack("success", "広告キャンペーンが登録されました。");
+      setAds((prev) => {
+        const newState = prev;
+        newState.push(res.data);
+        return newState;
+      })
+    }).catch((err)=>{
+      console.log("error-allowAds", err);
+    });
+  }
   const postAds = async (data) => {
     try {
       const res = await axios.post(
@@ -1625,15 +1645,24 @@ const ApiContextProvider = (props) => {
           },
         }
       );
-      setAds((prev) => {
-        const newState = prev;
-        newState.push(res.data);
-        return newState;
-      })
+      axios.post(
+        process.env.REACT_APP_API_URL + "/api/user/post-ads-stripe/",
+        {
+            SITE_URL : window.location.href.split('?')[0],
+            data: res.data
+        },
+        {
+            headers: { "Content-Type": "application/json" },
+        }
+      ).then(respon => {
+          window.location.replace(respon.data.goTo);
+      }).catch(err => {
+          console.log(err);
+      });
+
       // console.log(res.data);
       // setProfile(res.data);
       // getProfile();
-      newSnack("success", "広告キャンペーンが登録されました。");
     } catch {
       console.log("error-postAds");
     }
@@ -1732,7 +1761,8 @@ const ApiContextProvider = (props) => {
         getAds,
         ads,
         setAds,
-        addAdsCnt
+        addAdsCnt,
+        allowAds
       }}
     >
       {props.children}

@@ -74,7 +74,7 @@ const OwningPage = () => {
                                 <div className="card w-100 border-0 shadow-none p-5 rounded-xxl bg-lightblue2 mb-3">
                                     <div className="row">
                                         <div className="col-lg-6">
-                                            <img src={intpage.img} alt="banner" className="w-100" />
+                                            {intpage.img && <img src={intpage.img} alt="banner" className="w-100" />}
                                         </div>
                                         <div className="col-lg-6 ps-lg-5">
                                             <h2 className="mt-3 display1-size d-block mb-2 text-grey-900 fw-700">{intpage.title}</h2>

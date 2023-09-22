@@ -11,9 +11,7 @@ const HomeReccomendPage = (pageData) => {
     );
 
     const toMonopage = () => {
-        const createdIntData = new FormData()
-        createdIntData.append("intPageId",page.pageData.id)
-        newUserIntPage(createdIntData)
+        newUserIntPage(page.pageData.id)
         getUserInterest()
         history.push("/mono")
     }

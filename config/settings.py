@@ -165,3 +165,15 @@ EMAIL_USE_TLS = True
 
 STRIPE_SECRET_KEY = "sk_test_51NnvYcDMVOKPil4gAvM5x8alESw0DtShpM9zsbNBpPqXgADmmdD4GJ8lMwZmHjoB1JT5CvuZNOB4xvWNT5z9kgKc00FZFqbLU2" #Please put a secret API key. You can find a list of your API keys at https://dashboard.stripe.com/account/apikeys
 PRICE_ID = "price_1NnveCDMVOKPil4g49CRFDXc"
+ADVERTISEMENT_PRICE = [
+    [
+        "price_1NnveCDMVOKPil4g49CRFDXc", # 紐づけるTatami広告プラン A
+        "price_1NnveCDMVOKPil4g49CRFDXc", # 紐づけるTatami広告プラン B
+        "price_1NnveCDMVOKPil4g49CRFDXc", # 紐づけるTatami広告プラン C
+    ],
+    [
+        "price_1NnveCDMVOKPil4g49CRFDXc", # 紐づけるTatami広告プラン D
+        "price_1NnveCDMVOKPil4g49CRFDXc", # 紐づけるTatami広告プラン E
+        "price_1NnveCDMVOKPil4g49CRFDXc", # 紐づけるTatami広告プラン F
+    ]
+]

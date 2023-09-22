@@ -7,6 +7,7 @@ app_name = 'user'
 router = DefaultRouter()
 router.register('advertisement', views.AdvertisementViewSet)
 router.register('updateAds', views.UpdateAdvertisementViewSet)
+router.register('allowAds', views.AllowAdvertisementViewSet)
 router.register('profile', views.ProfileViewSet)
 router.register('profilecc', views.ProfileViewSetCC)
 router.register('pageattribute', views.PageAttributeViewSet)
@@ -31,6 +32,7 @@ router.register("example", views.MyExampleViewSet)
 
 urlpatterns = [
     path('create-checkout-session/', views.StripeCheckoutView.as_view(), name='stripe-create-checkout-session'),
+    path('post-ads-stripe/', views.StripeAdsCheckoutView.as_view(), name='stripe-create-checkout-session-ads'),
     path('forgot-password/', views.ForgotPasswordView.as_view(), name='forgot-password'),
     path('register/', views.CreateUserView.as_view(), name='register'),
     path('loginGoogle/', views.LoginGoogleView.as_view(), name='loginGoogle'),

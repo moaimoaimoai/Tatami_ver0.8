@@ -3,7 +3,9 @@ import { useContext } from "react";
 import { ApiContext } from "../context/ApiContext";
 import getCroppedImg from "./getCroppedImg";
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@material-ui/core";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import { Button, Slider } from "@material-ui/core";
+import axios from "axios";
 import clsx from 'clsx';
 import "./styles.css";
 
@@ -25,11 +27,13 @@ const AdsModal = (props) => {
 
     const [preview, setPreview] = useState(false);
 
+    const [processing, setProcessing] = useState(false);
+
     const [targets, setTargets] = useState([500, 1000, 3000]);
 
     const [adsData, setAdsData] = useState(inital_state);
 
-    const { postAds, profile } = useContext(ApiContext);
+    const { postAds, profile, allowAds } = useContext(ApiContext);
 
     const imgStyle = {
         borderRadius: '15px',
@@ -39,18 +43,19 @@ const AdsModal = (props) => {
     }
 
     const post = async () => {
+        setProcessing(true);
         const data = new FormData();
         data.append("type", adsData.type);
         data.append("target", targets[adsData.target]);
         data.append("url", adsData.url);
         data.append("content", adsData.content);
         data.append("updateCnt", 0);
-        data.append("updateDelFlag", 0);
+        data.append("updateDelFlag", 1);
         data.append("img", file.current.files[0]);
-        postAds(data);
-        setImgSrc("");
-        setAdsData(inital_state);
-        props.handleClose();
+        await postAds(data);
+        // setImgSrc("");
+        // setAdsData(inital_state);
+        // props.handleClose();
     };
 
     const onFileChange = useCallback(async (e) => {
@@ -71,6 +76,16 @@ const AdsModal = (props) => {
         // console.log(adsData);
         setAdsData({ ...adsData, [name]: value });
     };
+
+    useEffect(async () => {
+        const params = new URLSearchParams(window.location.search);
+        const queryValue = params.get('success');
+        const session_id = params.get('session_id');
+        const encrypted_pageId = params.get('indexAds');
+        if(queryValue === "true" && session_id && encrypted_pageId) {
+            await allowAds(encrypted_pageId)
+        }
+    }, []);
 
     return (
         <Dialog
@@ -194,8 +209,10 @@ const AdsModal = (props) => {
                                 imgSrc && adsData.content ?
                                     <button
                                         onClick={post}
-                                        className="full-width bg-current mt-0 btn pt-2 pb-2 ps-3 pe-3 lh-24 ms-1 ls-3 d-inline-block rounded-4 font-xsssss fw-700 ls-lg text-white"
+                                        style={{justifyContent:'center'}}
+                                        className="full-width bg-current mt-0 btn pt-2 pb-2 ps-3 pe-3 lh-24 ms-1 ls-3 d-flex rounded-4 font-xsssss fw-700 ls-lg text-white"
                                     >
+                                        { processing && <CircularProgress size={20} style={{alignSelf:'center', marginRight:'10px'}} /> }
                                         POST
                                     </button>
                                     :

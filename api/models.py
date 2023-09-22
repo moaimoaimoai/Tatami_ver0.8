@@ -348,6 +348,6 @@ class Advertisement(models.Model):
     )
     stripe_flag = models.BooleanField(default=True)
     del_flag = models.BooleanField(default=False)
-
+    allowed = models.BooleanField(default=False)
     def __str__(self):
         return str(self.created)

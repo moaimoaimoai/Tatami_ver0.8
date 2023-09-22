@@ -1,4 +1,4 @@
-import React from // useCallback, useState
+import React, { useState } from // useCallback,
 "react";
 import { useContext } from "react";
 import { ApiContext } from "../context/ApiContext";
@@ -14,10 +14,13 @@ const Createcomment = (commentTo, profileData) => {
     getUserInterest,
     createMonoComment,
   } = useContext(ApiContext);
-
+  const [commentBody, setCommentBody] = useState("");
   const handleInputChange = () => (event) => {
     const value = event.target.value;
     const name = event.target.name;
+    if (name === 'text') {
+      setCommentBody(value)
+    }
     setCreatedcomment({
       ...createdcomment,
       [name]: value,
@@ -25,7 +28,10 @@ const Createcomment = (commentTo, profileData) => {
     });
     // getUserInterest()
   };
-
+  const saveComment = async() => {
+    await createMonoComment();
+    setCommentBody('');
+  };
   return (
     <form action="#">
       <div className="card w-100 shadow-xss rounded-xxl border-0 ps-4 pt-1 pe-4 pb-2 mt-2">
@@ -43,6 +49,7 @@ const Createcomment = (commentTo, profileData) => {
             className="h100 bor-0 w-100 rounded-xxl p-2 ps-5 font-xssss text-grey-500 fw-500 border-light-md theme-dark-bg"
             cols="30"
             rows="10"
+            value={commentBody}
             placeholder="コメントする..."
           ></textarea>
         </div>
@@ -53,7 +60,7 @@ const Createcomment = (commentTo, profileData) => {
               <a
                 href="#none"
                 className="pointer bg-current text-center text-white font-xsss fw-600 p-3 w175 rounded-3 d-inline-block"
-                onClick={() => createMonoComment()}
+                onClick={saveComment}
               >
                 投稿
               </a>

@@ -215,5 +215,5 @@ class AdvertisementSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Advertisement
-        fields = ('id', 'type',  'url', 'content', 'img', 'target', 'cnt', 'created', 'userId', 'stripe_flag', 'del_flag')
+        fields = ('id', 'type',  'url', 'content', 'img', 'target', 'cnt', 'created', 'userId', 'stripe_flag', 'del_flag','allowed')
         extra_kwargs = {'userId': {'read_only': True}}

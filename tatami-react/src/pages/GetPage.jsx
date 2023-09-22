@@ -1,19 +1,23 @@
 import React, { 
     // useReducer, 
+    useState,
     Fragment,
     useContext,
     useEffect
  } from "react";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import { Link, useHistory } from 'react-router-dom';
 import axios from "axios";
-import { ApiContext } from '../context/ApiContext'
+import { ApiContext } from '../context/ApiContext';
 
 const GetPage = (props) => {
+    const [processing, setProcessing] = useState(false);
     const history = useHistory();
     const { intpage } = useContext(
         ApiContext,
     );
     const checkoutSingleItem = () => {
+        setProcessing(true);
         axios.post(
             process.env.REACT_APP_API_URL + "/api/user/create-checkout-session/",
             {
@@ -74,7 +78,7 @@ useEffect(()=>{
                                         <div className="col-sm-12 p-0 text-left">
                                         <h6 className="text-grey-500 font-xsss fw-500 mt-0 mb-0 lh-32"> </h6>
                                         <div className="form-group mb-1">
-                                          <button onClick={checkoutSingleItem} className="form-control text-center style2-input text-white fw-600 bg-dark border-0 p-0 mt-5 ">ページの情報を購入する</button>
+                                          <button style={{display:"flex",justifyContent:'center'}} onClick={checkoutSingleItem} className="form-control text-center style2-input text-white fw-600 bg-dark border-0 p-0 mt-5 "> { processing && <CircularProgress style={{alignSelf:'center', marginRight:'10px'}} /> } ページの情報を購入する</button>
                                         </div>
                                         </div>
                                 </div>

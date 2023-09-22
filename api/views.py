@@ -3,7 +3,7 @@ from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
 from . import serializers
 from .models import Advertisement, User, Profile, MonoPage, MonoPost, MonoComment, FriendRequest, UserIntPage, UserIntPost, UserIntComment, UserIntUser, UserIntAttribute, PageAttribute, FollowingPage, AffiliateLinks, UserRecommendedPage, UserRecommendedUser, OwningPage
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.db.models import Q, Sum
 from django.db import connection
 from rest_framework.exceptions import ValidationError
@@ -474,6 +474,24 @@ class AdvertisementViewSet(viewsets.ModelViewSet):
         authenticate(self.request)
         serializer.save(userId=self.request.user)
 
+class AllowAdvertisementViewSet(viewsets.ModelViewSet):
+    queryset = Advertisement.objects.all()
+    serializer_class = serializers.AdvertisementSerializer
+
+    def create(self, request):
+        authenticate(request)
+        encrypted_id = request.data["adsId"]
+        adsId = signing.loads(encrypted_id)
+
+        # Retrieve the advertisement item from the database
+        advertisement = get_object_or_404(Advertisement, id=adsId)
+
+        # Update the status of ads
+        advertisement.allowed = 1
+        advertisement.save()
+        serializer = self.serializer_class(advertisement)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 class UpdateAdvertisementViewSet(viewsets.ModelViewSet):
     queryset = Advertisement.objects.all()
     serializer_class = serializers.AdvertisementSerializer
@@ -490,6 +508,40 @@ class UpdateAdvertisementViewSet(viewsets.ModelViewSet):
             cursor.execute("UPDATE api_advertisement SET del_flag = 1 where id=" + str(request.data["adsId"]))
             cursor.fetchone()
             return Response("success", status=status.HTTP_200_OK)
+
+class StripeAdsCheckoutView(generics.CreateAPIView):
+    def post(self, request):
+        data = json.loads(request.body)
+        SITE_URL = data.get('SITE_URL')
+        adsData = data.get('data')
+        targets = [500, 1000, 3000]
+        index = targets.index(int(adsData.get('target')))
+        encrypted_id= signing.dumps(adsData.get('id'))
+        print(settings.ADVERTISEMENT_PRICE[adsData.get('type')][index])
+        try:
+            checkout_session = stripe.checkout.Session.create(
+                line_items=[
+                    {
+                        'price': settings.ADVERTISEMENT_PRICE[adsData.get('type')][index],
+                        'quantity': 1,
+                    },
+                ],
+                currency="JPY",
+                payment_method_types=['card',],
+                mode='payment',
+                success_url = SITE_URL + '?success=true&session_id={CHECKOUT_SESSION_ID}&indexAds=' + encrypted_id,
+                cancel_url = SITE_URL + '?canceled=true',
+            )
+            return JsonResponse({'goTo': checkout_session.url})
+        except Exception as e:
+            # Handle the exception and retrieve the error message
+            error_message = str(e)
+            print("error_message")
+            print(error_message)
+            return Response(
+                {'error': 'Something went wrong when creating stripe checkout session'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 class MyExampleViewSet(viewsets.ModelViewSet):
     queryset = Advertisement.objects.all()
