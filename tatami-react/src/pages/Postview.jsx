@@ -218,17 +218,17 @@ const Postview = ({
               >
                 <figure className="avatar me-3">
                   <img
-                    src={monopage.img}
+                    src={monopage ? monopage.img : ''}
                     alt="avater"
                     className="shadow-sm rounded-3 w45"
                   />
                 </figure>
                 <h4 className="fw-600 text-grey-600 font-xssss">
                   {" "}
-                  {monopage.title.slice(0, 12)}..
+                  {monopage && monopage.title.slice(0, 12)}..
                   <span className="d-block font-xssss fw-500 mt-1 lh-3 text-grey-500">
                     {" "}
-                    {monopage.created_on}
+                    {monopage && monopage.created_on}
                   </span>
                 </h4>
               </div>
@@ -292,15 +292,13 @@ const Postview = ({
             )}
           </div>
 
-          {profile.userProfile === profileData.userProfile ? (
+          {profile && profileData && profile.userProfile === profileData.userProfile && (
             <div
               className="position-absolute right-0 top-5 pointer me-1"
               onClick={() => showDelModal(true)}
             >
               <i className="ti-close font-xssss btn-round-xs bg-success text-white"></i>
             </div>
-          ) : (
-            <></>
           )}
         </div>
       ) : (
@@ -425,7 +423,7 @@ const Postview = ({
                 >
                   <figure className="avatar me-3">
                     <img
-                      src={monopage.img}
+                      src={monopage ? monopage.img : ''}
                       alt="avater"
                       className="shadow-sm rounded-3 w45"
                     />

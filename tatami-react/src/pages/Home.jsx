@@ -147,7 +147,7 @@ const Home = (props) => {
                 {
                   profiles &&
                   postsbyscroll.map((post, index) => (
-                    <>
+                    <span key={index}>
                       <Postview
                         key={post.id}
                         postData={post}
@@ -167,7 +167,7 @@ const Home = (props) => {
                           /> :
                           <></>
                       }
-                    </>
+                    </span>
                   ))
                 }
                 <div className="card-body p-0 mb-3">

@@ -208,7 +208,7 @@ const Login = (props) => {
 				else if (errData.password)
 					newSnack("error", errData.password);
 				else
-					newSnack("error", "LoginFailed");
+					newSnack("error", "ログインに失敗しました。");
 				dispatch({ type: ERROR_CATCHED });
 			}
 		} else {
@@ -225,7 +225,7 @@ const Login = (props) => {
 				// dispatch({ type: TOGGLE_MODE });
 				history.push('/please-verify');
 			}).catch(err => {
-				newSnack("error", "RegisterFailed");
+				newSnack("error", "登録に失敗しました。");
 				dispatch({ type: ERROR_CATCHED });
 			});
 		};

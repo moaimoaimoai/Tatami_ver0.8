@@ -64,135 +64,53 @@ const ApiContextProvider = (props) => {
   // }, [])
 
   useEffect(() => {
-    // console.log("UseEffect");
+  
     const getMyProfile = async () => {
-      try {
-        if (!token) return;
-        const resmy = await axios.get(
-          process.env.REACT_APP_API_URL + "/api/user/myprofile/",
-          {
-            headers: {
-              Authorization: `Token ${token}`,
-            },
-          }
-        );
+      if (!token) return;
+
+      axios.get(process.env.REACT_APP_API_URL + "/api/user/myprofile/", {
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      })
+      .then(resmy => {
         if (resmy.data[0] && resmy.data[0].birth === null) {
           newSnack("info", "プロフィールを記入してください。");
           history.push('/account');
+          return;
         }
-        const res = await axios.get(
-          process.env.REACT_APP_API_URL + "/api/user/approval/",
-          {
-            headers: {
-              Authorization: `Token ${token}`,
-            },
-          }
-        );
 
-        resmy.data[0] && setProfile(resmy.data[0]);
-        resmy.data[0] &&
-          setEditedProfile({
-            id: resmy.data[0].id,
-            nickName: resmy.data[0].nickName,
-            caption: resmy.data[0].caption,
-            birthday: resmy.data[0].birth,
-            sex: resmy.data[0].sex === null ? "0" : resmy.data[0].sex.toString()
-          });
-        resmy.data[0] &&
-          setAskList(
-            res.data.filter((ask) => {
-              return resmy.data[0].userProfile === ask.askTo;
-            })
-          );
-        setAskListFull(res.data);
-        // console.log("GetMyProfile", resmy.data[0].birth);
-
-        // if (resmy.data[0].birth === null && window.location != '/account') window.location = '/acoount';
-      } catch {
-        console.log("error-getMyProfile");
-      }
+        axios.get(process.env.REACT_APP_API_URL + "/api/user/approval/", {
+          headers: {
+            Authorization: `Token ${token}`,
+          },
+        })
+        .then(res => {
+          resmy.data[0] && setProfile(resmy.data[0]);
+          resmy.data[0] &&
+            setEditedProfile({
+              id: resmy.data[0].id,
+              nickName: resmy.data[0].nickName,
+              caption: resmy.data[0].caption,
+              birthday: resmy.data[0].birth,
+              sex: resmy.data[0].sex === null ? "0" : resmy.data[0].sex.toString()
+            });
+          resmy.data[0] &&
+            setAskList(
+              res.data.filter((ask) => {
+                return resmy.data[0].userProfile === ask.askTo;
+              })
+            );
+          setAskListFull(res.data);    
+        })
+        .catch(err => {
+        });
+      })
+      .catch(err => {
+        history.push('/login');
+      });
     };
-
-    {
-      // const getFriendRequest = async () => {
-      //   try {
-      //     const resreqall = await axios.get(process.env.REACT_APP_API_URL + "/api/user/approval/", {
-      //       headers: {
-      //         Authorization: `Token ${token}`,
-      //       },
-      //     });
-      //     const requests = resreqall.data.filter((each) => {
-      //       return each.approved === false
-      //     })
-      //     const requestsfromother = requests.filter((each) => {
-      //       return each.askFrom !== profile.userProfile
-      //     })
-      //     setFriendRequest(requestsfromother)
-
-
-      //   } catch {
-      //     console.log("error");
-      //   }
-      // }
-
-
-
-
-
-      // const getProfile = async () => {
-      //   try {
-      //     const res = await axios.get(process.env.REACT_APP_API_URL + "/api/user/profile/", {
-      //       headers: {
-      //         Authorization: `Token ${token}`,
-      //       },
-      //     });
-      //     setProfiles(res.data);
-      //   } catch {
-      //     console.log("error");
-      //   }
-      // };
-
-
-      // const getMonoPages = async () => {
-      //   try {
-      //     console.log("getMonoPages")
-      //     const res = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopage/", {
-      //       headers: {
-      //         Authorization: `Token ${token}`,
-      //       },
-      //     });
-      //     setMonopages(res.data)
-      //   } catch {
-      //     console.log("error")
-      //   }
-      // }
-      // const getMonoPosts = async () => {
-      //   try {
-      //     const res = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopost/", {
-      //       headers: {
-      //         Authorization: `Token ${token}`,
-      //       },
-      //     })
-      //     setMonoposts(res.data);
-      //   } catch {
-      //     console.log("error");
-      //   }
-      // }
-
-      // const getMonoComments = async () => {
-      //   try {
-      //     const res = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monocomment/", {
-      //       headers: {
-      //         Authorization: `Token ${token}`,
-      //       },
-      //     })
-      //     setMonocomments(res.data);
-      //   } catch {
-      //     console.log("error");
-      //   }
-      // }
-    }
-
+   
     const getAttribute = async () => {
       try {
         const res = await axios.get(process.env.REACT_APP_API_URL + "/api/user/pageattribute/", {
@@ -204,309 +122,6 @@ const ApiContextProvider = (props) => {
       } catch {
         console.log("error-getAttribute");
       }
-    }
-
-    {
-      // const getFollowingUserPosts = async () => {
-      //   try {
-      //     const respost = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopost/", {
-      //       headers: {
-      //         Authorization: `Token ${token}`,
-      //       },
-      //     })
-      //     const resreqall = await axios.get(process.env.REACT_APP_API_URL + "/api/user/approval/", {
-      //       headers: {
-      //         Authorization: `Token ${token}`,
-      //       },
-      //     });
-      //     const following = resreqall.data.filter((each) => {
-      //       return each
-      //     });
-      //     const a = following.map((follow) => {
-      //       return follow.askTo
-      //     })
-      //     const b = following.map((follow) => {
-      //       return follow.askFrom
-      //     })
-      //     const concat = [...a, ...b]
-      //     const set = new Set(concat)
-      //     const followinguser = [...set]
-      //     const post = respost.data.filter((post) => {
-      //       return (followinguser.includes(post.userPost))
-      //     })
-      //     post && setFollowinguserpost(post);
-      //   } catch {
-      //     console.log("error");
-      //   }
-      // }
-
-      // const getFollowingUser = async () => {
-      //   try {
-      //     const resreqall = await axios.get(process.env.REACT_APP_API_URL + "/api/user/approval/", {
-      //       headers: {
-      //         Authorization: `Token ${token}`,
-      //       },
-      //     });
-      //     const resprof = await axios.get(process.env.REACT_APP_API_URL + "/api/user/profile/", {
-      //       headers: {
-      //         Authorization: `Token ${token}`,
-      //       },
-      //     });
-      //     const following = resreqall.data.filter((each) => {
-      //       return each
-      //     });
-      //     const a = following.map((follow) => {
-      //       return follow.askTo
-      //     })
-      //     const b = following.map((follow) => {
-      //       return follow.askFrom
-      //     })
-      //     const concat = [...a, ...b]
-      //     const set = new Set(concat)
-      //     const followinguser = [...set]
-      //     const followinguserprof = resprof.data.filter((prof) => {
-      //       return (followinguser.includes(prof.userProfile))
-      //     })
-      //     followinguserprof && setFollowinguser(followinguserprof)
-      //   } catch {
-      //     console.log("error");
-      //   }
-      // }
-
-      // const getFollowedUser = async () => {
-      //   try {
-      //     const resreqall = await axios.get(process.env.REACT_APP_API_URL + "/api/user/approval/", {
-      //       headers: {
-      //         Authorization: `Token ${token}`,
-      //       },
-      //     });
-      //     const resprof = await axios.get(process.env.REACT_APP_API_URL + "/api/user/profile/", {
-      //       headers: {
-      //         Authorization: `Token ${token}`,
-      //       },
-      //     });
-      //     const following = resreqall.data.filter((each) => {
-      //       return each
-      //     });
-      //     const a = following.map((follow) => {
-      //       return follow.askTo
-      //     })
-      //     const concat = [...a]
-      //     const set = new Set(concat)
-      //     const followedusers = [...set]
-      //     const followeduserprof = resprof.data.filter((prof) => {
-      //       return (followedusers.includes(prof.userProfile))
-      //     })
-      //     followeduserprof && setFolloweduser(followeduserprof)
-      //   } catch {
-      //     console.log("error");
-      //   }
-      // }
-
-      // const getMutualFollowingUser = async () => {
-      //   try {
-      //     const resreqall = await axios.get(process.env.REACT_APP_API_URL + "/api/user/approval/", {
-      //       headers: {
-      //         Authorization: `Token ${token}`,
-      //       },
-      //     });
-      //     const resprof = await axios.get(process.env.REACT_APP_API_URL + "/api/user/profile/", {
-      //       headers: {
-      //         Authorization: `Token ${token}`,
-      //       },
-      //     });
-      //     const following = resreqall.data.filter((each) => {
-      //       return each.approved === true
-      //     });
-      //     const a = following.map((follow) => {
-      //       return follow.askTo
-      //     })
-      //     const b = following.map((follow) => {
-      //       return follow.askFrom
-      //     })
-      //     const concat = [...a, ...b]
-      //     const set = new Set(concat)
-      //     const followinguser = [...set]
-      //     const followinguserprof = resprof.data.filter((prof) => {
-      //       return (followinguser.includes(prof.userProfile))
-      //     })
-      //     followinguserprof && setMutualfollowinguser(followinguserprof)
-      //   } catch {
-      //     console.log("error");
-      //   }
-      // }
-
-
-      // const getFollowingPage = async () => {
-      //   try {
-      //     const respage = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopage/", {
-      //       headers: {
-      //         Authorization: `Token ${token}`,
-      //       },
-      //     });
-      //     const resfollow = await axios.get(process.env.REACT_APP_API_URL + "/api/user/followingpage/", {
-      //       headers: {
-      //         Authorization: `Token ${token}`,
-      //       },
-      //     });
-      //     const followingpageid = resfollow.data.map((follow) => {
-      //       return follow.pageId
-      //     });
-      //     const followingpageinfo = respage.data.filter((page) => {
-      //       return (followingpageid.includes(page.id))
-      //     });
-      //     followingpageinfo && setFollowingpage(followingpageinfo);
-      //   } catch {
-      //     console.log("error")
-      //   }
-      // }
-
-      // const getOwningPage = async () => {
-      //   try {
-      //     const respage = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopage/", {
-      //       headers: {
-      //         Authorization: `Token ${token}`,
-      //       },
-      //     });
-      //     const resown = await axios.get(process.env.REACT_APP_API_URL + "/api/user/owningpage/", {
-      //       headers: {
-      //         Authorization: `Token ${token}`,
-      //       },
-      //     });
-      //     const owningpageid = resown.data.map((own) => {
-      //       return own.pageId
-      //     });
-      //     const owningpageinfo = respage.data.filter((page) => {
-      //       return (owningpageid.includes(page.id))
-      //     });
-      //     owningpageinfo && setOwningpage(owningpageinfo);
-      //   } catch {
-      //     console.log("error")
-      //   }
-      // }
-
-
-
-      // const getUserInterest = async () => {
-      //   try {
-      //     const resintpage = await axios.get(
-      //       'http://localhost:8000/api/user/userintpage/',
-      //         {
-      //         headers: {
-      //         Authorization: `Token ${token}`,
-      //       },
-      //     })
-      //     const resintpost = await axios.get(
-      //       'http://localhost:8000/api/user/userintpost/',
-      //         {
-      //         headers: {
-      //         Authorization: `Token ${token}`,
-      //       },
-      //     })
-      //     const resintcomment = await axios.get(
-      //       'http://localhost:8000/api/user/userintcomment/',
-      //         {
-      //         headers: {
-      //         Authorization: `Token ${token}`,
-      //       },
-      //     })
-      //     const resintuser = await axios.get(
-      //       'http://localhost:8000/api/user/userintuser/',
-      //         {
-      //         headers: {
-      //         Authorization: `Token ${token}`,
-      //       },
-      //     })
-      //     const resintattribute = await axios.get(process.env.REACT_APP_API_URL + "/api/user/userintattribute/", {
-      //       headers: {
-      //         Authorization: `Token ${token}`,
-      //       },
-      //     })
-      //     const respage = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopage/", {
-      //       headers :{
-      //         Authorization: `Token ${token}`,
-      //       },
-      //     });
-      //     const respost = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopost/", {
-      //       headers: {
-      //         Authorization: `Token ${token}`,
-      //       },
-      //     })
-      //     // const resuser = await axios.get(process.env.REACT_APP_API_URL + "/api/user/profile/", {
-      //     //   headers: {
-      //     //     Authorization: `Token ${token}`,
-      //     //   },
-      //     // })
-      //     const rescomment = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monocomment/", {
-      //       headers: {
-      //         Authorization: `Token ${token}`,
-      //       },
-      //     })
-      //     const resattribute = await axios.get(process.env.REACT_APP_API_URL + "/api/user/pageattribute/", {
-      //       headers: {
-      //         Authorization: `Token ${token}`,
-      //       },
-      //     })
-      //     const resaf = await axios.get(process.env.REACT_APP_API_URL + "/api/user/affiliatelinks/", {
-      //       headers: {
-      //         Authorization: `Token ${token}`,
-      //       },
-      //     })
-      //     resintpage.data[0] &&
-      //     setIntpage(respage.data.find((each) => {
-      //       return each.id === Number(resintpage.data[0].intPageId)
-      //     }));
-      //     resintpost.data[0] &&
-      //     setIntpost(respost.data.find((each) => {
-      //       return each.id === Number(resintpost.data[0].intPostId)
-      //     }));
-      //     resintcomment.data[0] &&
-      //     setIntComment(rescomment.data.find((each) => {
-      //       return each.id === Number(resintcomment.data[0].intCommentId)
-      //     }));
-      //     resintuser.data[0] &&
-      //     // setIntuser(resuser.data.find((each) => {
-      //     //   return each.userProfile === Number(resintuser.data[0].intUserId)
-      //     // }));
-      //     resintattribute.data[0] &&
-      //     setIntAttribute(resattribute.data.find((each) => {
-      //       return each.id === Number(resintattribute.data[0].intAttributeId)
-      //     }));
-      //     resintpage.data[0] &&
-      //     setPostsforintpage(respost.data.filter((each) => {
-      //       return each.reviewTo === Number(resintpage.data[0].intPageId)
-      //     }));
-      //     resintuser.data[0] &&
-      //     setPostsforintuser(respost.data.filter((each) => {
-      //       return each.userPost === Number(resintuser.data[0].intUserId)
-      //     }));
-      //     resintpost.data[0] &&
-      //     setCommentsforintpost(rescomment.data.filter((each) => {
-      //       return each.post === Number(resintpost.data[0].intPostId)
-      //     }));
-      //     console.log(resintattribute.data[0]);
-      //     resintattribute.data[0] &&
-      //     setPagesforintattribute(respage.data.filter((each) => {
-      //       return each.attribute.includes(resintattribute.data[0].intAttributeId)
-      //     }));
-      //     resaf.data[0] &&
-      //     setAffiliates(resaf.data[0])
-      //     // const tmpIntpage =respage.data.find((each) => {
-      //     //   return each.id === Number(resintpage.data[0].intPageId)
-      //     // });
-      //     // tmpIntpage && 
-      //     // setAffiliates(resaf.data.find((each) => {
-      //     //   return each.id === Number(tmpIntpage.affiliateId)
-      //     // }));
-      //     // tmpIntpage && 
-      //     // setIsfollowingpage(respage.data.find((each) => {
-      //     //   return each.id === tmpIntpage.id
-      //     // }));
-      //     console.log("API実行");
-      //   } catch {
-      //     console.log("getUserInteresterror");
-      //   }
-      // }
     }
 
     getMyProfile();
