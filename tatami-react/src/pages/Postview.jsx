@@ -115,18 +115,18 @@ const Postview = ({
         onClose={() => showDelModal(false)}
         aria-labelledby="responsive-dialog-title"
       >
-        <DialogTitle id="responsive-dialog-title">{"Delete Post"}</DialogTitle>
+        <DialogTitle id="responsive-dialog-title">{"削除"}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Do you really delete this post?
+          この投稿を削除しますか？
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={() => onDeleteMonoPost()} color="primary">
-            Ok
+            はい
           </Button>
           <Button onClick={() => showDelModal(false)} color="primary" autoFocus>
-            Cancel
+            キャンセル
           </Button>
         </DialogActions>
       </Dialog>
@@ -177,7 +177,7 @@ const Postview = ({
               </div>
 
               <div className="card-body p-0 me-lg-5">
-                <p className="fw-600 text-grey-600 lh-26 font-xssss w-100 mb-2">
+                <p className="fw-600 text-grey-600 lh-26 font-xssss w-100 mb-2" style={{ whiteSpace: "pre-line" }}>
                   {postData.text}
                 </p>
               </div>
@@ -393,7 +393,7 @@ const Postview = ({
                 </div>
 
                 <div className="card-body p-0 me-lg-5">
-                  <p className="fw-600 text-grey-500 lh-26 font-xssss w-100 mb-2">
+                  <p className="fw-600 text-grey-500 lh-26 font-xssss w-100 mb-2" style={{ whiteSpace: "pre-line" }}>
                     {postData.text}
                   </p>
                 </div>

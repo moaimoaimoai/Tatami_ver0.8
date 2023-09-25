@@ -91,7 +91,8 @@ const Mono = () => {
     newUserIntPage,
     newUserIntPageWithScroll,
     ads,
-    getAds
+    getAds,
+    monoposts
   } = useContext(ApiContext);
 
   useEffect(() => {
@@ -102,6 +103,10 @@ const Mono = () => {
     console.log('pageId:'+count);
     fetchData();
   }, [count])
+
+  useEffect(() => {
+    setPostsforintpagebyscroll(monoposts);
+  }, [monoposts])
 
   const [cookies] = useCookies(["current-token"]);
 
@@ -120,6 +125,10 @@ const Mono = () => {
     setIsLoading(false);
   } 
 
+  const followTopic = () => {
+    followPage(Number(pageid))
+    newSnack("info", "話題をフォローしました。");
+  };
 
   const sharePage = () => {
     copy(window.location.href);
@@ -130,9 +139,9 @@ const Mono = () => {
     profiles &&
     postsforintpage.map((post, index) => {
       return (
-        <>
+        <span key={index}>
           <Postview
-            key={index}
+            
             postData={post}
             profileData={profiles.find((item) => {
               return item.userProfile === Number(post.userPost);
@@ -150,7 +159,7 @@ const Mono = () => {
               /> :
               <></>
           }
-        </>
+        </span>
       )
     });
 
@@ -277,7 +286,7 @@ const Mono = () => {
                     {!isfollow ? (
                       <Button
                         className="bg-success me-1 border-0 text-white fw-600 text-uppercase font-xssss float-left rounded-3 d-inline-block mt-0 p-2 lh-34 text-center pointer ls-3 w200 mb-3"
-                        onClick={() => followPage()}
+                        onClick={() => followTopic()}
                       >
                         この話題をフォロー
                       </Button>
@@ -407,9 +416,9 @@ const Mono = () => {
                 {
                   profiles &&
                   postsforintpagebyscroll.map((post, index) => (
-                    <>
+                    <span key={index}>
                       <Postview
-                        key={index}
+                       
                         postData={post}
                         profileData={profiles.find((item) => {
                           return item.userProfile === Number(post.userPost);
@@ -427,7 +436,7 @@ const Mono = () => {
                           /> :
                           <></>
                       }
-                    </>
+                    </span>
                   ))
                 }
                 <div className="card-body p-0 mb-3">

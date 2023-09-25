@@ -18,7 +18,7 @@ const SpecificUserpageEach = (props) => {
 
   const createNewRequest = () => {
     const uploadDataAsk = new FormData();
-    uploadDataAsk.append("askTo", profile.userProfile);
+    uploadDataAsk.append("askTo", props.userid);
     uploadDataAsk.append("approved", false);
     newRequestFriend(uploadDataAsk);
   };

@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
 import Slider from "react-slick";
 import Header from "../components/Header";
@@ -26,16 +26,49 @@ const Home = (props) => {
   const {
     profiles,
     profile,
-    followinguserpost,
+    // followinguserpost,
     //  monopages,
+    postWithScroll,
     followingpage,
     ads
     //  followinguser
   } = useContext(ApiContext);
 
-  const { newSnack } = useContext(SnackbarContext);
+  // const { newSnack } = useContext(SnackbarContext);
   const [cookies] = useCookies(["current-token"]);
   //   const history = useHistory();
+  const [count, setCount] = useState(0);
+  const [postsbyscroll, setPostsbyscroll] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    const result = await postWithScroll(count);
+    console.log(result);
+    setPostsbyscroll(prevItems => [...prevItems, ...result]);
+    if (result != [])
+    setIsLoading(false);
+  }
+
+  useEffect(() => {
+    console.log('pageId:'+count);
+    fetchData();
+  }, [count])  
+
+  // Fetch more data when user scrolls to the bottom
+  const handleScroll = () => {
+    if (
+      window.innerHeight + document.documentElement.scrollTop + 5 >=
+      document.documentElement.offsetHeight && !isLoading
+    ) {
+      setCount((prev) => prev + 1);
+    }
+  };
+
+  // Attach scroll event listener
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+  }, []); 
 
   const friendsettings = {
     arrows: false,
@@ -58,71 +91,12 @@ const Home = (props) => {
     return profiles.filter((item) => { return item.userProfile === id })[0];
   }
 
-  let listMonoPosts = followinguserpost.map((post, index) => (
-    <>
-      <Postview
-        key={post.id}
-        postData={post}
-        profileData={profiles.find((item) => {
-          return item.userProfile === post.userPost;
-        })}
-        reposting={post.reposting}
-        repostingProfileData={profiles.find((item) => {
-          return item.userProfile === post.repostingFromUser;
-        })}
-      />
-      {
-        index % 3 == 2 && parseInt(index / 3) < ads.length ?
-          <AdvertisementView
-            profile={getSpecificProfile(ads[parseInt(index / 3)].userId)}
-            item={ads[parseInt(index / 3)]}
-          /> :
-          <></>
-      }
-    </>
-  ));
-
-  const listAds = ads.map((item, key) => {
-    return <AdvertisementView
-      profile={getSpecificProfile(item.userId)}
-      item={item}
-      key={key}
-    />
-  });
-
-  // const listMonoPages =
-  //     monopages.map(page =>
-  //         <HomeReccomendPage
-  //         key = {page.id}
-  //         pageData= {page}/>
-  //     )
-
-
   const listFollowingPages =
     followingpage.map(page =>
       <FollowingPage
         key={page.id}
         monopage={page} />
     ).slice(0, 2)
-
-  const [num, setNum] = useState(1);
-  const [display, setDisplay] = useState(null);
-
-  const slice = (arr, size) =>
-    arr.flatMap((_, i, a) => (i % size ? [] : [a.slice(i, i + size)]));
-  const slicedpostlist = slice(listMonoPosts, 3);
-
-  const getMorePosts = () => {
-    const next = num + 1;
-    setNum(next);
-    const slicedpostlistdisplay = slicedpostlist.slice(0, num + 1);
-    const _display = slicedpostlistdisplay.map((posts) => <>{posts}</>);
-    if(listMonoPosts.length > num * 3)
-    {
-      setDisplay(_display);
-      newSnack('success', 'More Views has displayed!!!')
-    }
-  };
 
   return (
     <Fragment>
@@ -170,21 +144,32 @@ const Home = (props) => {
                 <Requestleft />
 
                 <HomePicture />
-                {/* {listMonoPages[num]} */}
-                {/* {listAds} */}
-                {num === 1 ? slicedpostlist[0] : display}
-                <div className="card-body p-0 mb-3">
-                  <div className="text-center">
-                    <Button
-                      className=" fw-700 text-white font-xssss text-center bg-current "
-                      onClick={() => getMorePosts()}
-                      size="sm"
-                      variant="solid"
-                    >
-                      さらに読み込み
-                    </Button>
-                  </div>
-                </div>
+                {
+                  profiles &&
+                  postsbyscroll.map((post, index) => (
+                    <>
+                      <Postview
+                        key={post.id}
+                        postData={post}
+                        profileData={profiles.find((item) => {
+                          return item.userProfile === post.userPost;
+                        })}
+                        reposting={post.reposting}
+                        repostingProfileData={profiles.find((item) => {
+                          return item.userProfile === post.repostingFromUser;
+                        })}
+                      />
+                      {
+                        index % 3 == 2 && parseInt(index / 3) < ads.length ?
+                          <AdvertisementView
+                            profile={getSpecificProfile(ads[parseInt(index / 3)].userId)}
+                            item={ads[parseInt(index / 3)]}
+                          /> :
+                          <></>
+                      }
+                    </>
+                  ))
+                }
                 <div className="card-body p-0 mb-3">
                   <div className="card w-100 shadow-xss rounded-xxl border-0 p-4 mb-3">
                     <div

@@ -5,8 +5,10 @@ import { useHistory } from "react-router-dom";
 const FollowEach = ({ prof }) => {
   const {
     profile,
+    newRequestFriend,
     newUserIntUser,
     getUserInterest,
+    followinguser
     //  changeApprovalRequest,getFriendRequest
   } = useContext(ApiContext);
   const history = useHistory();
@@ -26,6 +28,16 @@ const FollowEach = ({ prof }) => {
       history.push(`/user/${prof.userProfile}`);
     }
   };
+  const createNewRequest = () => {
+    const uploadDataAsk = new FormData();
+    uploadDataAsk.append("askTo", prof.userProfile);
+    uploadDataAsk.append("approved", false);
+    newRequestFriend(uploadDataAsk);
+  };
+  const isfollow =
+    followinguser.find((item) => {
+      return item.userProfile === prof.userProfile;
+    }) || prof.userProfile === profile.userProfile;
 
   return (
     <div className="col-md-3 col-sm-4 pe-2 ps-2">
@@ -56,6 +68,27 @@ const FollowEach = ({ prof }) => {
           <p className="fw-500 font-xssss text-grey-500 mt-0 mb-3">
             {prof.created_on}
           </p>
+          {/* <CardActions className="mycard">
+          <Grid container justifyContent="center">
+            <Grid item> */}
+              {!isfollow ? (
+                <button
+                  className="mt-0 btn pt-2 pb-2 ps-3 pe-3 lh-24 ms-1 ls-3 d-inline-block rounded-xl bg-success font-xsssss fw-700 ls-lg text-white"
+                  onClick={() => createNewRequest()}
+                >
+                  フォロー
+                </button>
+              ) : (
+                <button
+                  className="mt-0 btn pt-2 pb-2 ps-3 pe-3 lh-24 ms-1 ls-3 d-inline-block rounded-xl bg-success font-xsssss fw-700 ls-lg text-white"
+                  disabled
+                >
+                  フォロー中
+                </button>
+              )}
+            {/* </Grid>
+          </Grid>
+        </CardActions> */}
         </div>
       </div>
     </div>

@@ -24,7 +24,7 @@ const useStyles = makeStyles({
   card: {
     maxWidth: 345,
     marginBottom: "1rem",
-    position: "relative"
+    position: "relative",
   },
   cardContent: {
     minHeight: "150px",
@@ -79,7 +79,7 @@ const RecommendEach = (pageData, isfollow) => {
 
   return (
     <div className="col-md-6 col-sm-12">
-      <Card className={clsx(classes.card)}>
+      <Card className={clsx(classes.card, "card")}>
         <a
           onClick={(ev) => {
             ev.preventDefault();
@@ -98,10 +98,10 @@ const RecommendEach = (pageData, isfollow) => {
             title="Hotel"
           />
           <CardContent className={clsx(classes.cardContent, "mycard")}>
-            <Typography gutterBottom variant="h5" component="h2">
+            <Typography gutterBottom variant="h5" component="h2" className = "black-typography">
               {pageData.pageData.title}
             </Typography>
-            <Typography variant="body2" color="textSecondary" component="p">
+            <Typography variant="body2" color="textSecondary" component="p" className = "black-typography">
               {pageData.pageData.created_on}
             </Typography>
           </CardContent>
@@ -109,7 +109,7 @@ const RecommendEach = (pageData, isfollow) => {
         <CardActions className="mycard">
           <div className="row">
             <div className="col-12">
-              <h2 className="font-xss  lh-1 mt-2 text-grey-900 fw-300">
+              <h2 className="font-xss  lh-1 mt-2 text-grey-900 fw-300 black-typography">
                 {Math.round(sum / rates.length)}
               </h2>
             </div>

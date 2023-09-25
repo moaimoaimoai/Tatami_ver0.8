@@ -120,7 +120,7 @@ const Followed = () => {
                       <li className="active list-inline-item me-5">
                         <Link
                           className="active fw-700 font-xssss text-grey-500 pt-3 pb-3 ls-1 d-inline-block"
-                          to="/following"
+                          to="/followed"
                           data-toggle="tab"
                         >
                           フォロワー

@@ -32,17 +32,10 @@ const Recommenduser = () => {
       return;
     }
 
-    const serchedprofiles = profiles.filter(
-      (user) =>
-        Object.values(user.nickName).filter(
-          (item) =>
-            item !== undefined &&
-            item !== null &&
-            item.toUpperCase().indexOf(value.toUpperCase()) !== -1
-        ).length > 0
+    const searchedprofiles = profiles.filter(
+      (user) => user.nickName.toUpperCase().indexOf(value.toUpperCase()) > -1
     );
-
-    setShowprofiles(serchedprofiles);
+    setShowprofiles(searchedprofiles);
   };
 
   const defaultProfiles =
@@ -56,19 +49,18 @@ const Recommenduser = () => {
     profile.id &&
     showprofiles &&
     showprofiles.map((profile) => (
-      <RecommenduserEach key={profile.nickName} profileeach={profile} />
+      <RecommenduserEach key={profile.id} profileeach={profile} />
     ));
 
   const fetchData = async () => {
     setIsLoading(true);
     const result = await profilesWithScroll(count);
-    console.log(result);
+
     setProfilesbyscroll(prevItems => [...prevItems, ...result]);
     setIsLoading(false);
   }
 
   useEffect(() => {
-    console.log('pageId:'+count);
     fetchData();
   }, [count])  
 

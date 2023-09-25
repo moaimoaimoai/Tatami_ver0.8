@@ -299,6 +299,23 @@ class MyMonoPostViewSet(viewsets.ModelViewSet):
         authenticate(self.request)
         serializer.save(userPost=self.request.user)
 
+class MonoPostWithSelfViewSetCC(viewsets.ModelViewSet):
+    queryset = MonoPost.objects.all()
+    serializer_class = serializers.MonoPostSerializer
+
+    def list(self, request):
+        authenticate(self.request)
+        result = FriendRequest.objects.filter(Q(askTo=self.request.user) | Q(askFrom=self.request.user)).values_list('askFrom', 'askTo')
+        user_list = []
+        for item in result:
+            user_list.extend(item)
+        limit = 3
+        count = request.query_params.get("count")
+        offset = limit * int(count)
+        data = self.queryset.filter(userPost__in=user_list)[offset:offset+limit]
+        serializer = self.serializer_class(data, many=True)
+        return Response(serializer.data)
+
 
 class MonoCommentViewSet(viewsets.ModelViewSet):
     queryset = MonoComment.objects.all()

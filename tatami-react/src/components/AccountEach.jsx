@@ -159,6 +159,7 @@ const AccountEach = () => {
         type: croppedImage.type,
       });
       setCover(file);
+      editProfile(file);
     } catch (e) {
       console.error(e);
     }
@@ -254,7 +255,7 @@ const AccountEach = () => {
                           {imgSrc ? (
                             <div className="card-body  position-relative">
                               <label className="mont-font fw-600 font-xssss mb-2">
-                                Top Image has uploaded!
+                                トップ画像がアップロードされました。
                               </label>
                             </div>
                           ) : (

@@ -65,7 +65,7 @@ const AdvertisementView = (props) => {
           </div>
         </div>
 
-        <div className="card-body d-flex  p-0">
+        {/* <div className="card-body d-flex  p-0">
           <div
             className="emoji-bttn pointer d-flex align-items-center fw-600 text-grey-600 text-dark lh-26 font-xsssss me-2"
           >
@@ -81,7 +81,7 @@ const AdvertisementView = (props) => {
               2 Reposted
             </span>
           </a>
-        </div>
+        </div> */}
         <div className="position-absolute right-0 top-5 me-1">
           {/* <span className="text-grey-600">{">>>"}</span> */}
           <span className="fw-600">プロモーション</span>

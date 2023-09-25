@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { useEffect, useState, Fragment } from "react";
 import Header from '../components/Header';
 import Leftnav from '../components/Leftnav';
 import Appfooter from '../components/Appfooter';
@@ -16,16 +16,33 @@ import RecommendEach from "./RecommendEach";
 const FollowingPageList = () => {
     const { profile,
         //  monoposts, profiles,
+        monopages,
+        getMonoPages,
         followingpage } = useContext(
             ApiContext
         );
     // const posts = monoposts.filter(item =>{return item.userPost === profile.userProfile})
     const cookies = useCookies(["current-token"])[0];
-    const pages =
-        followingpage.map(page =>
-            <RecommendEach
-                key={page.id}
-                pageData={page} />)
+    const [pages, setPages] = useState([]);
+
+    useEffect(() => {
+        getMonoPages();
+    }, [])
+
+    useEffect(() => {
+        getPages();
+    }, [monopages])
+
+    const getPages = () => {
+        var mpages = [];
+
+        mpages = followingpage.map(dev => {
+            var index = monopages.findIndex(page => page.id == dev.pageId)
+            if(index >= 0)
+                return monopages[index];
+        })
+        setPages(mpages);
+    }
     return (
         <Fragment>
             <Header />
@@ -79,7 +96,11 @@ const FollowingPageList = () => {
                             <></>
                             } */}
                                 <div className="row ps-2 pe-2">
-                                    {pages}
+                                    {pages.map(zz =>
+                                        <RecommendEach
+                                            key={zz.id}
+                                            pageData={zz} />
+                                        )}
                                 </div>
                                 <div className="card-body p-0 mb-3">
                                     <div className="card w-100 shadow-xss rounded-xxl border-0 p-4 mb-3">

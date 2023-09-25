@@ -70,7 +70,7 @@ const RecommenduserEach = ({ profileeach }) => {
 
   return (
     <div className="col-md-3 col-sm-4 pe-2 ps-2">
-      <Card className={clsx(classes.card)}>
+      <Card className={clsx(classes.card, "card")}>
         <CardContent className={clsx(classes.cardContent, "text-center", "mycard")}>
           <figure
             className="overflow-hidden avatar ms-auto me-auto mb-3 position-relative w65 z-index-1 pointer"

@@ -139,10 +139,10 @@ const CropperModalforprof: React.FC<Props> = ({
               showCroppedImage();
             }}
           >
-            OK
+            はい
           </Button>
           <Button className="close" onClick={onClose}>
-            Close
+            閉じる
           </Button>
         </div>
       </div>

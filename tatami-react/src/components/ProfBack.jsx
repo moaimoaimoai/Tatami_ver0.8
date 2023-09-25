@@ -177,7 +177,7 @@ const ProfBack = () => {
         {imgSrc ? (
           <div className="card-body  position-relative">
             <label className="mont-font fw-600 font-xssss mb-2">
-              Back Image has uploaded!
+              背景画像がアップロードされました。
             </label>
           </div>
         ) : (

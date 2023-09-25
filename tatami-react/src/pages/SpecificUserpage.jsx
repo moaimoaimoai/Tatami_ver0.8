@@ -67,7 +67,7 @@ const SpecificUserpage = () => {
           <div className="middle-sidebar-left ps-2 pe-2">
             <div className="row">
               <div className="col-xl-12 mb-3 ">
-                <SpecificUserpageEach />
+                <SpecificUserpageEach userid = {userid}/>
               </div>
               <div className="col-xl-4 col-xxl-3 col-lg-4 pe-0">
                 <SpecificUserProfiledetail />

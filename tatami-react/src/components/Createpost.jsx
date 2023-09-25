@@ -99,8 +99,17 @@ const Createpost = (props) => {
   /** 切り取ったあとの画像URL */
   const [croppedImgSrc, setCroppedImgSrc] = useState("");
 
+  const [content, setContent] = useState("");
+
   const doPost = () => {
     onHandleClose();
+
+    const tempPost = createdmonopost;
+    tempPost.text = content;
+    tempPost.reviewTo = props.postTo;
+
+    setCreatedMonopost(tempPost);
+
     createMonoPost();
   };
 
@@ -109,7 +118,6 @@ const Createpost = (props) => {
     setPostimg([]);
     props.handleClose();
   }
-
 
   /**
    * ファイルアップロード後
@@ -172,14 +180,9 @@ const Createpost = (props) => {
   }, [croppedAreaPixels, imgSrc, profile.nickName, setPostimg]);
 
   const handleInputChange = () => (event) => {
-    const value = event.target.value;
-    const name = event.target.name;
-    setCreatedMonopost({
-      ...createdmonopost,
-      [name]: value,
-      reviewTo: props.postTo,
-    });
+    setContent(event.target.value)
   };
+
   // const handleSliderChange = () => event => {
   //     const value = event.target.value
   //     setCreatedMonopost({...createdmonopost, rating:value, reviewTo: postTo.postTo})
@@ -266,6 +269,7 @@ const Createpost = (props) => {
               </figure>
               <textarea
                 onChange={handleInputChange()}
+                value={content}
                 name="text"
                 className="h100 bor-0 w-100 rounded-xxl p-2 ps-5 font-xssss fw-500 theme-dark-text border-light-md theme-dark-bg"
                 cols="30"
@@ -277,7 +281,7 @@ const Createpost = (props) => {
               {croppedImgSrc ? (
                 <div className="card-body  position-relative">
                   <label className="mont-font fw-600 font-xssss mb-1">
-                    Image has uploaded!
+                    画像がアップロードされました。
                   </label>
                 </div>
               ) : (
@@ -293,7 +297,7 @@ const Createpost = (props) => {
                   variant="contained"
                   component="label"
                 >
-                  Upload
+                  アップロード
                   <input type="file" hidden onChange={onFileChange} />
                 </Button>
               </div>
@@ -340,13 +344,13 @@ const Createpost = (props) => {
         </form>
       </DialogContent>
       <DialogActions className="mycard">
-        {createdmonopost.text ? (
+        {content ? (
           <Button
             color="secondary"
             variant="contained"
             onClick={doPost}
           >
-            POST
+            投稿
           </Button>
         ) : (
           <Button
@@ -355,11 +359,11 @@ const Createpost = (props) => {
             variant="contained"
             disabled
           >
-            POST
+            投稿
           </Button>
         )}
         <Button onClick={() => onHandleClose()} color="primary">
-          Close
+          閉じる
         </Button>
       </DialogActions>
     </Dialog>

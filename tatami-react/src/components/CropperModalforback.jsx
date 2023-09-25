@@ -132,7 +132,7 @@ const CropperModalforback: React.FC<Props> = ({
         </div>
         <div className="buttons">
           <Button className="close" onClick={onClose}>
-            Close
+            閉じる
           </Button>
           <Button
             className="ok"
@@ -141,7 +141,7 @@ const CropperModalforback: React.FC<Props> = ({
               showCroppedImage();
             }}
           >
-            OK
+            はい
           </Button>
         </div>
       </div>

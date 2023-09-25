@@ -96,11 +96,11 @@ const AdsModal = (props) => {
             fullWidth={true}
             maxWidth="sm"
         >
-            <DialogTitle className="mycard" id="max-width-dialog-title">Advertisement</DialogTitle>
+            <DialogTitle className="mycard" id="max-width-dialog-title">広告を作成</DialogTitle>
             <DialogContent className="mycard">
                 <div className="form-group">
                     <label className="mont-font fw-600 font-xsss mb-2 text-dark">
-                        Item1
+                        広告文（200文字以下）
                         {adsData.content ? <></> : <span className="text-danger font-xs">{" "} *</span>}
                     </label>
                     <textarea
@@ -110,12 +110,12 @@ const AdsModal = (props) => {
                         className="h100 bor-0 w-100 rounded-xxl p-2 font-xssss fw-500 theme-dark-text border-light-md theme-dark-bg"
                         cols="20"
                         rows="10"
-                        placeholder="意見をポスト..."
+                        placeholder=""
                     />
                 </div>
                 <div className="form-group">
                     <label className="mont-font fw-600 font-xsss mb-2 text-dark">
-                        Item2
+                        URL
                     </label>
                     <input
                         value={adsData.url}
@@ -129,7 +129,7 @@ const AdsModal = (props) => {
                     <div className="col-md-6 col-sm-12">
                         <div className="form-group">
                             <label className="mont-font fw-600 font-xsss mb-2 text-dark">
-                                Item3
+                                方式
                             </label>
                             <select
                                 className="form-control"
@@ -137,15 +137,15 @@ const AdsModal = (props) => {
                                 value={adsData.type}
                                 onChange={handleInputChange()}
                             >
-                                <option value={0}>Impression</option>
-                                <option value={1}>Click</option>
+                                <option value={0}>インプレッション型</option>
+                                <option value={1}>クリック型</option>
                             </select>
                         </div>
                     </div>
                     <div className="col-md-6 col-sm-12">
                         <div className="form-group">
                             <label className="mont-font fw-600 font-xsss mb-2 text-dark">
-                                Item4
+                                ターゲット回数
                             </label>
                             <select
                                 className="form-control"
@@ -155,7 +155,7 @@ const AdsModal = (props) => {
                             >
                                 {
                                     targets.map((value, index) => {
-                                        return <option key={index} value={index}>{value}</option>
+                                        return <option key={index} value={index}>{value}回</option>
                                     })
                                 }
                             </select>
@@ -169,7 +169,7 @@ const AdsModal = (props) => {
                                 <img style={imgStyle} src={imgSrc} maxWidth={"100%"} />
                                 :
                                 <div style={{ ...imgStyle, height: '100%' }} className="d-flex full-width justify-content-center align-items-center">
-                                    No Image
+                                    画像なし
                                 </div>
                         }
                     </div>
@@ -181,7 +181,7 @@ const AdsModal = (props) => {
                                 fullWidth={true}
                                 component="label"
                             >
-                                トップ画像を追加
+                                画像を追加
                                 {imgSrc ? <></> : <span className="text-danger font-xs">{" "} *</span>}
                                 <input type="file" hidden onChange={onFileChange} ref={file} />
                             </Button>
@@ -193,14 +193,14 @@ const AdsModal = (props) => {
                                         onClick={() => setPreview(true)}
                                         className="full-width bg-current mt-0 btn pt-2 pb-2 ps-3 pe-3 lh-24 ms-1 ls-3 d-inline-block rounded-4 font-xsssss fw-700 ls-lg text-white"
                                     >
-                                        Preview
+                                        プレビューを表示
                                     </button>
                                     :
                                     <button
                                         disabled
                                         className="full-width mt-0 btn pt-2 pb-2 ps-3 pe-3 lh-24 ms-1 ls-3 d-inline-block rounded-4 btn-dark font-xsssss fw-700 ls-lg text-white"
                                     >
-                                        Preview
+                                        プレビューを表示
                                     </button>
                             }
                         </div>
@@ -213,14 +213,14 @@ const AdsModal = (props) => {
                                         className="full-width bg-current mt-0 btn pt-2 pb-2 ps-3 pe-3 lh-24 ms-1 ls-3 d-flex rounded-4 font-xsssss fw-700 ls-lg text-white"
                                     >
                                         { processing && <CircularProgress size={20} style={{alignSelf:'center', marginRight:'10px'}} /> }
-                                        POST
+                                        広告を出稿
                                     </button>
                                     :
                                     <button
                                         disabled
                                         className="full-width mt-0 btn pt-2 pb-2 ps-3 pe-3 lh-24 ms-1 ls-3 d-inline-block rounded-4 btn-dark font-xsssss fw-700 ls-lg text-white"
                                     >
-                                        POST
+                                        広告を出稿
                                     </button>
                             }
                         </div>

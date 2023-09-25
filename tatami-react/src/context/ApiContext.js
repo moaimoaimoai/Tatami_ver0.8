@@ -550,7 +550,6 @@ const ApiContextProvider = (props) => {
       // const followingpageinfo = monopages.filter((page) => {
       //   return (followingpageid.includes(page.id))
       // });
-      console.log("getFollowingPage", filteredFollowingPage);
       filteredFollowingPage && setFollowingpage(filteredFollowingPage);
     } catch {
       console.log("error-getFollowingPage")
@@ -721,22 +720,19 @@ const ApiContextProvider = (props) => {
     }
   }
 
-
-
-
-
   const getProfile = async () => {
-    try {
-      // console.log("getProfile");
-      const res = await axios.get(process.env.REACT_APP_API_URL + "/api/user/profile/", {
-        headers: {
-          Authorization: `Token ${token}`,
-        },
-      });
-      setProfiles(res.data);
-    } catch {
-      console.log("error-getProfile");
-    }
+    axios.get(process.env.REACT_APP_API_URL + "/api/user/profile/", {
+      headers: {
+        Authorization: `Token ${token}`,
+      },
+    }).then((res) => {
+      if (res.data) {
+        setProfiles(res.data);          
+      }
+    })
+    .catch((err) =>{
+      console.log("error-getProfile",err);
+    })
   };
 
   const getMonoPages = async () => {
@@ -1129,14 +1125,15 @@ const ApiContextProvider = (props) => {
     }
   };
 
-  const editProfile = async () => {
+  const editProfile = async (file = null) => {
     const editData = new FormData();
     console.log("editProfile", editedProfile.sex);
     editedProfile.nickName && editData.append("nickName", editedProfile.nickName);
     editedProfile.birthday && editData.append("birth", editedProfile.birthday);
     editedProfile.sex && editData.append("sex", editedProfile.sex);
     editedProfile.caption && editData.append("caption", editedProfile.caption);
-    cover.name && editData.append("img", cover, cover.name);
+    if(!file) cover.name && editData.append("img", cover, cover.name);
+    else file.name && editData.append("img", file, file.name);
     coverBack.name && editData.append("imgBackground", coverBack, coverBack.name);
     // if (!editedProfile.sex) {
     //   setEditedProfile({...editedProfile, sex: 0});
@@ -1355,6 +1352,19 @@ const ApiContextProvider = (props) => {
     }
   }
 
+  const postWithScroll = async (count) => {
+    try {
+      const respost = await axios.get(process.env.REACT_APP_API_URL + "/api/user/postcc/?&count="+count, {
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      })
+      return respost.data;
+    } catch {
+      console.log("error-newUserIntPage");
+    }
+  }
+
   const newUserIntPost = async (interestData) => {
     try {
       const resintpost = await axios.post(
@@ -1463,23 +1473,23 @@ const ApiContextProvider = (props) => {
   }
 
   const followPage = async (id) => {
-    // const createData = new FormData();
-    // createData.append("pageId", id)
-    // try {
-    //   //   const res = await axios.post(
-    //   //   process.env.REACT_APP_API_URL + "/api/user/followingpage/",
-    //   //   createData, 
-    //   //   {
-    //   //     headers: {
-    //   //       "Content-Type": "application/json",
-    //   //       Authorization: `Token ${token}`,
-    //   //     },
-    //   //   }
-    //   // )
-    //   getFollowingPage()
-    // } catch {
-    //   console.log("error-followPage")
-    // }
+    const createData = new FormData();
+    createData.append("pageId", id)
+    try {
+        const res = await axios.post(
+        process.env.REACT_APP_API_URL + "/api/user/followingpage/",
+        createData, 
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Token ${token}`,
+          },
+        }
+      )
+      getFollowingPage()
+    } catch {
+      console.log("error-followPage")
+    }
   }
 
   const ownPage = async (id) => {
@@ -1737,6 +1747,7 @@ const ApiContextProvider = (props) => {
         newUserIntPage,
         newUserIntPageWithScroll,
         profilesWithScroll,
+        postWithScroll,
         newUserIntPost,
         newUserIntUser,
         getUserInterest,

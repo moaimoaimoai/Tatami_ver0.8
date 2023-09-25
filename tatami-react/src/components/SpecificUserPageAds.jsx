@@ -9,7 +9,7 @@ const SpecificUserpageAds = (props) => {
     return (
         <div className="card w-100 shadow-xss rounded-xxl border-0 mb-3">
             <div className="card-body d-flex align-items-center  p-4">
-                <h4 className="fw-700 mb-0 font-xssss text-grey-900">RecentAds</h4>
+                <h4 className="fw-700 mb-0 font-xssss text-grey-900">掲載中の広告</h4>
                 {/* <a href="/home" className="fw-600 ms-auto font-xssss text-primary">全て見る</a> */}
             </div>
             <div className="card-body d-block pt-0 pb-2">
