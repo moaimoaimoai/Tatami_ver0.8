@@ -850,6 +850,7 @@ const ApiContextProvider = (props) => {
     try {
       // const resintpage = interestData;
       setCurrentPageId(pageId);
+      localStorage.setItem('userIntPageId', pageId)
       // const respost = await axios.get(process.env.REACT_APP_API_URL + "/api/user/monopost/", {
       //   headers: {
       //     Authorization: `Token ${token}`,

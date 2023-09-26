@@ -15,7 +15,6 @@ const OwningEach = (pageData, isfollow) => {
 
     const toOwnPage = () => {
         newUserIntPage(page.pageData.id)
-        getUserInterest()
         history.push("/owningpage")
     }
 

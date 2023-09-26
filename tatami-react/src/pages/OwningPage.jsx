@@ -8,12 +8,13 @@ import Leftnav from '../components/Leftnav';
 import Appfooter from '../components/Appfooter';
 // import Popupchat from '../components/Popupchat';
 import { ApiContext } from '../context/ApiContext'
+import { useEffect } from "react";
 
 const OwningPage = () => {
     const {
         //  profile, profiles, 
-        intpage, 
-        // postsforintpage, followPage, followingpage,affiliates,owningpage, getUserInterest, newUserIntPage
+        intpage, newUserIntPage
+        // postsforintpage, followPage, followingpage,affiliates,owningpage, getUserInterest,
     } =  useContext(
         ApiContext
     );
@@ -61,6 +62,12 @@ const OwningPage = () => {
             },
             
         };
+    useEffect( async () => {
+        if (!intpage.title || intpage === []) {
+            const pageId = localStorage.getItem('userIntPageId');
+            await newUserIntPage(pageId);
+        }
+    }, []);
     return (
         <Fragment>
             <Header />
