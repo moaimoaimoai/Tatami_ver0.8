@@ -44,10 +44,12 @@ const Home = (props) => {
   const fetchData = async () => {
     setIsLoading(true);
     const result = await postWithScroll(count);
-    console.log(result);
-    setPostsbyscroll(prevItems => [...prevItems, ...result]);
-    if (result != [])
-    setIsLoading(false);
+    if (result) {
+      console.log(result);
+      setPostsbyscroll(prevItems => [...prevItems, ...result]);
+      if (result != [])
+      setIsLoading(false);
+    }
   }
 
   useEffect(() => {

@@ -215,7 +215,7 @@ const Login = (props) => {
 			dispatch({ type: START_FETCH });
 			axios.post(
 				process.env.REACT_APP_API_URL + "/api/user/register/",
-				state.credentialsReg,
+				{...state.credentialsReg, app_url : process.env.REACT_APP_PUBLIC_URL},
 				{
 					headers: { "Content-Type": "application/json" },
 				}
@@ -313,7 +313,7 @@ const Login = (props) => {
 											<path fill="none" d="M0 0h48v48H0z"></path>
 										</g>
 									</svg>
-									Sign in with Google
+									Google でログイン
 								</button>
 								{/* <GoogleLogin onSuccess={(e)=>{console.log(e);}} onError={(e)=>{console.log(e);}} /> */}
 								<h6 onClick={() => toggleView()} className="pointer  text-grey-500 font-xsss fw-500 mt-0 mb-0 lh-32">{state.isLoginView ? '初めてTatamiをご利用される方はこちら' : 'アカウントをお持ちの方はこちら'}</h6>

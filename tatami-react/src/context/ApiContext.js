@@ -76,6 +76,15 @@ const ApiContextProvider = (props) => {
       .then(resmy => {
         if (resmy.data[0] && resmy.data[0].birth === null) {
           newSnack("info", "プロフィールを記入してください。");
+          resmy.data[0] && setProfile(resmy.data[0]);
+          resmy.data[0] &&
+            setEditedProfile({
+              id: resmy.data[0].id,
+              nickName: resmy.data[0].nickName,
+              caption: resmy.data[0].caption,
+              birthday: resmy.data[0].birth,
+              sex: resmy.data[0].sex === null ? "0" : resmy.data[0].sex.toString()
+            });
           history.push('/account');
           return;
         }

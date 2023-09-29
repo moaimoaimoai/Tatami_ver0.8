@@ -8,14 +8,14 @@ from django.core import signing
 
 
 class UserSerializer(serializers.ModelSerializer):
-
+    app_url = serializers.CharField(write_only=True)
     class Meta:
         model = get_user_model()
-        fields = ('id', 'email', 'password')
+        fields = ('id', 'email', 'password', 'app_url')
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
-
+        app_url = validated_data.pop('app_url', None)  # Remove app_url from validated_data
         user = get_user_model().objects.create_user(**validated_data)
         userInfo=get_user_model().objects.get(email=user)
         encrypted_id = signing.dumps(userInfo.id)
@@ -29,6 +29,7 @@ class UserSerializer(serializers.ModelSerializer):
                 'body': encrypted_key,
                 # TODO: Update the signature
                 'sign': 'Tatami',
+                'SITE_URL': app_url
             }
         )
         send_mail(

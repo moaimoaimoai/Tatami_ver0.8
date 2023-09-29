@@ -292,7 +292,7 @@ const AccountEach = () => {
                           <input
                             type="date"
                             className={editedProfile.birthday ? "form-control" : "form-control  border-danger"}
-                            value={editedProfile.birthday}
+                            value={editedProfile.birthday?? ''}
                             name="birthday"
                             onChange={handleInputChange()}
                           />
@@ -351,7 +351,7 @@ const AccountEach = () => {
                           name="caption"
                           maxLength={100}
                           rows="5"
-                          value={editedProfile.caption}
+                          value={editedProfile.caption?? ''}
                           onChange={handleInputChange()}
                         ></textarea>
                       </div>

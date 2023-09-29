@@ -67,6 +67,7 @@ class ForgotPasswordView(generics.CreateAPIView):
     def post(self, request):
         data = json.loads(request.body)
         email = data.get('email')
+        SITE_URL = data.get('app_url')
         try:
             userInfo=get_user_model().objects.get(email=email,type='normal')
         except get_user_model().DoesNotExist:
@@ -85,6 +86,7 @@ class ForgotPasswordView(generics.CreateAPIView):
             'body': encrypted_key,
             # TODO: Update the signature
             'sign': 'Tatami',
+            'SITE_URL': SITE_URL
         })
         send_mail(
             'パスワードのリセット',

@@ -26,7 +26,7 @@ const ForgotPassword = ({ props, match }) => {
                 try {
                     const res = await axios.post(
                         process.env.REACT_APP_API_URL+"/api/user/forgot-password/",
-                        { email: email },
+                        { email: email, app_url : process.env.REACT_APP_PUBLIC_URL },
                         {
                             headers: { "Content-Type": "application/json" },
                         }
